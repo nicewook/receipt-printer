@@ -65,17 +65,23 @@ def prepare_print_content(text, min_lines=6):
     # 텍스트를 줄바꿈
     lines = wrap_text(text, max_width=40)
     
-    # 각 줄을 가운데 정렬
-    centered_lines = [center_text(line) for line in lines]
+    # 위아래 여백 추가
+    lines.insert(0, "")  # 위에 1줄 여백
     
-    # 최소 줄 수 보장
-    while len(centered_lines) < min_lines:
-        if len(centered_lines) % 2 == 0:
-            centered_lines.insert(0, "")  # 위에 빈 줄 추가
-        else:
-            centered_lines.append("")     # 아래에 빈 줄 추가
+    # 아래 여백 계산
+    text_line_count = len(lines) - 1  # 위 여백 제외한 실제 텍스트 줄 수
+    if text_line_count == 1:
+        bottom_padding = 3
+    elif text_line_count == 2:
+        bottom_padding = 2
+    else:
+        bottom_padding = 1
     
-    return centered_lines
+    # 아래 여백 추가
+    for _ in range(bottom_padding):
+        lines.append("")
+    
+    return lines
 
 def create_esc_pos_content(lines):
     """ESC/POS 명령어가 포함된 출력 내용 생성"""
@@ -107,12 +113,9 @@ def create_esc_pos_content(lines):
     # 좌측 정렬로 복귀
     content.append(b'\x1B\x61\x00')  # ESC a 0
     
-    # 용지 절단 (여러 방법 시도)
+    # 용지 절단
     content.append(b'\n\n\n')  # 추가 라인 피드
     content.append(b'\x1D\x56\x00')  # GS V 0 (풀 컷)
-    content.append(b'\x1D\x56\x41')  # GS V A (부분 컷)
-    content.append(b'\x1B\x69')      # ESC i (풀 컷 대안)
-    content.append(b'\x1B\x6D')      # ESC m (부분 컷 대안)
     
     return b''.join(content)
 
