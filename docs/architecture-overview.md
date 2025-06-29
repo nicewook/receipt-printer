@@ -9,6 +9,17 @@
 ### 병렬 시스템 구조
 
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#ffffff',
+    'primaryTextColor': '#000000',
+    'primaryBorderColor': '#000000',
+    'lineColor': '#000000',
+    'secondaryColor': '#f0f0f0',
+    'tertiaryColor': '#e0e0e0'
+  }
+}}%%
 graph TB
     subgraph "Modern MCP System"
         CLAUDE[Claude Desktop<br/>자연어 대화]
@@ -43,39 +54,72 @@ graph TB
     FASTAPI -.-> SCHEMAS
     MCP -.-> CONFIG
     
-    style CLI fill:#ffcccc,stroke:#ff0000,stroke-width:2px
-    style CLAUDE fill:#ccccff,stroke:#0000ff,stroke-width:2px
+    style CLI fill:#ffe6e6,stroke:#cc0000,stroke-width:3px,color:#000000
+    style CLAUDE fill:#e6f3ff,stroke:#0066cc,stroke-width:3px,color:#000000
+    style MCP fill:#f0f8ff,stroke:#4d79a4,color:#000000
+    style FASTAPI fill:#f0f8ff,stroke:#4d79a4,color:#000000
+    style UTILS fill:#f0f8ff,stroke:#4d79a4,color:#000000
 ```
 
 ### 데이터 플로우
 
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#f8f9fa',
+    'primaryTextColor': '#000000',
+    'primaryBorderColor': '#333333',
+    'lineColor': '#333333',
+    'actorBkg': '#ffffff',
+    'actorBorder': '#2563eb',
+    'actorTextColor': '#000000',
+    'actorLineColor': '#2563eb',
+    'signalColor': '#2563eb',
+    'signalTextColor': '#000000',
+    'activationBkgColor': '#e6f3ff',
+    'activationBorderColor': '#2563eb',
+    'noteBkgColor': '#fef3c7',
+    'noteTextColor': '#000000',
+    'noteBorderColor': '#f59e0b',
+    'loopTextColor': '#000000',
+    'labelTextColor': '#000000',
+    'labelBoxBkgColor': '#ffffff',
+    'labelBoxBorderColor': '#333333'
+  }
+}}%%
 sequenceDiagram
-    participant U as 사용자
-    participant C as Claude Desktop
-    participant M as MCP Wrapper
-    participant F as FastAPI Server
-    participant P as Printer Utils
-    participant S as CUPS/프린터
-    participant L as Legacy CLI (main.py)
+    participant U as 🧑‍💻 사용자
+    participant C as 🤖 Claude Desktop
+    participant M as 🔄 MCP Wrapper
+    participant F as ⚡ FastAPI Server
+    participant P as 🛠️ Printer Utils
+    participant S as 🖨️ CUPS/프린터
+    participant L as 📟 Legacy CLI (main.py)
 
-    Note over U,S: 시나리오 1: Claude Desktop을 통한 영수증 출력 (Modern MCP System)
-    U->>C: "영수증 출력해줘"
-    C->>M: JSON-RPC 호출
-    M->>F: HTTP POST 요청
-    F->>P: 텍스트 처리 및 ESC/POS 생성
-    P->>S: CUPS를 통한 프린터 출력
-    S-->>P: 출력 결과
-    P-->>F: 응답 데이터
-    F-->>M: HTTP 응답
-    M-->>C: JSON-RPC 응답
-    C-->>U: 출력 완료 메시지
+    Note over U,S: 🔵 시나리오 1: Claude Desktop을 통한 영수증 출력 (Modern MCP System)
+    
+    rect rgb(240, 248, 255)
+        U->>+C: "영수증 출력해줘"
+        C->>+M: JSON-RPC 호출
+        M->>+F: HTTP POST 요청
+        F->>+P: 텍스트 처리 및 ESC/POS 생성
+        P->>+S: CUPS를 통한 프린터 출력
+        S-->>-P: 출력 결과
+        P-->>-F: 응답 데이터
+        F-->>-M: HTTP 응답
+        M-->>-C: JSON-RPC 응답
+        C-->>-U: ✅ 출력 완료 메시지
+    end
 
-    Note over U,S: 시나리오 2: 레거시 CLI 사용 (Legacy System - 완전 독립)
-    U->>L: python main.py "텍스트"
-    L->>S: 직접 CUPS 호출 (자체 구현)
-    S-->>L: 출력 결과
-    L-->>U: 터미널 출력
+    Note over U,S: 🔴 시나리오 2: 레거시 CLI 사용 (Legacy System - 완전 독립)
+    
+    rect rgb(255, 245, 245)
+        U->>+L: python main.py "텍스트"
+        L->>+S: 직접 CUPS 호출 (자체 구현)
+        S-->>-L: 출력 결과
+        L-->>-U: ✅ 터미널 출력
+    end
 ```
 
 ## 🔧 핵심 컴포넌트 분석
@@ -131,6 +175,15 @@ sequenceDiagram
 
 ### 1. **병렬 시스템 아키텍처**
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#ffffff',
+    'primaryTextColor': '#000000',
+    'primaryBorderColor': '#000000',
+    'lineColor': '#000000'
+  }
+}}%%
 graph TB
     subgraph "두 개의 독립적 시스템"
         subgraph "Legacy System"
@@ -151,9 +204,10 @@ graph TB
     LEGACY -.-> CUPS_SHARED
     AI -.-> CUPS_SHARED
     
-    style LEGACY fill:#ffcccc,stroke:#ff0000,stroke-width:3px
-    style MODERN fill:#ccffcc  
-    style AI fill:#ccccff
+    style LEGACY fill:#ffe6e6,stroke:#cc0000,stroke-width:3px,color:#000000
+    style MODERN fill:#e6ffe6,stroke:#00cc00,color:#000000
+    style AI fill:#e6f3ff,stroke:#0066cc,color:#000000
+    style CUPS_SHARED fill:#f5f5f5,stroke:#666666,color:#000000
 ```
 
 **핵심 아이디어**: 
@@ -163,6 +217,15 @@ graph TB
 
 ### 2. **레이어드 아키텍처**
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#ffffff',
+    'primaryTextColor': '#000000',
+    'primaryBorderColor': '#000000',
+    'lineColor': '#000000'
+  }
+}}%%
 graph TB
     subgraph "Presentation Layer"
         CLI_UI[CLI Interface]
@@ -193,6 +256,16 @@ graph TB
     PRINTER_LOGIC --> TEXT_PROCESSING
     TEXT_PROCESSING --> CUPS_DRIVER
     CUPS_DRIVER --> FILE_SYSTEM
+    
+    style CLI_UI fill:#ffe6e6,stroke:#cc0000,color:#000000
+    style HTTP_UI fill:#e6f3ff,stroke:#0066cc,color:#000000
+    style MCP_UI fill:#e6f3ff,stroke:#0066cc,color:#000000
+    style FASTAPI_APP fill:#e6ffe6,stroke:#00cc00,color:#000000
+    style MCP_APP fill:#e6ffe6,stroke:#00cc00,color:#000000
+    style PRINTER_LOGIC fill:#fff0e6,stroke:#ff6600,color:#000000
+    style TEXT_PROCESSING fill:#fff0e6,stroke:#ff6600,color:#000000
+    style CUPS_DRIVER fill:#f5f5f5,stroke:#666666,color:#000000
+    style FILE_SYSTEM fill:#f5f5f5,stroke:#666666,color:#000000
 ```
 
 ### 3. **마이크로서비스 지향 설계**
@@ -204,6 +277,15 @@ graph TB
 
 ### 다층 보안 모델
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#ffffff',
+    'primaryTextColor': '#000000',
+    'primaryBorderColor': '#000000',
+    'lineColor': '#000000'
+  }
+}}%%
 graph TB
     subgraph "입력 검증 레이어"
         PYDANTIC[Pydantic 스키마 검증]
@@ -227,6 +309,15 @@ graph TB
     CORS --> SHLEX
     SHLEX --> TEMPFILE
     TEMPFILE --> OUTPUT[안전한 출력]
+    
+    style INPUT fill:#ffe6e6,stroke:#cc0000,color:#000000
+    style PYDANTIC fill:#fff0e6,stroke:#ff6600,color:#000000
+    style WHITELIST fill:#fff0e6,stroke:#ff6600,color:#000000
+    style HEADERS fill:#ffffcc,stroke:#cccc00,color:#000000
+    style CORS fill:#ffffcc,stroke:#cccc00,color:#000000
+    style SHLEX fill:#e6ffe6,stroke:#00cc00,color:#000000
+    style TEMPFILE fill:#e6ffe6,stroke:#00cc00,color:#000000
+    style OUTPUT fill:#e6f3ff,stroke:#0066cc,color:#000000
 ```
 
 ## 🎯 주요 설계 원칙
