@@ -340,7 +340,11 @@ class MCPServer:
         """MCP 요청 처리"""
         method = request.get("method")
         params = request.get("params", {})
-        request_id = request.get("id")
+        request_id = request.get("id", 1)  # 기본값 설정
+        
+        # request_id가 None인 경우 기본값 사용
+        if request_id is None:
+            request_id = 1
         
         try:
             if method == "initialize":
@@ -372,6 +376,16 @@ class MCPServer:
                 tool_name = params.get("name")
                 arguments = params.get("arguments", {})
                 
+                if not tool_name:
+                    return {
+                        "jsonrpc": "2.0",
+                        "id": request_id,
+                        "error": {
+                            "code": -32602,
+                            "message": "Invalid params: missing tool name"
+                        }
+                    }
+                
                 result = await self.handle_tool_call(tool_name, arguments)
                 
                 return {
@@ -394,7 +408,7 @@ class MCPServer:
             self.log_debug(f"Request handling error: {str(e)}")
             return {
                 "jsonrpc": "2.0",
-                "id": request_id,
+                "id": request_id if request_id is not None else 1,
                 "error": {
                     "code": -32603,
                     "message": f"Internal error: {str(e)}"
@@ -417,6 +431,14 @@ class MCPServer:
                 
                 try:
                     request = json.loads(line)
+                    
+                    # 요청 검증
+                    if not isinstance(request, dict):
+                        raise ValueError("Request must be a JSON object")
+                    
+                    if "jsonrpc" not in request:
+                        request["jsonrpc"] = "2.0"
+                    
                     response = await self.handle_request(request)
                     print(json.dumps(response, ensure_ascii=False))
                     sys.stdout.flush()
@@ -425,10 +447,23 @@ class MCPServer:
                     self.log_debug(f"JSON decode error: {str(e)}")
                     error_response = {
                         "jsonrpc": "2.0",
-                        "id": None,
+                        "id": 1,  # null 대신 기본값 사용
                         "error": {
                             "code": -32700,
-                            "message": "Parse error"
+                            "message": f"Parse error: {str(e)}"
+                        }
+                    }
+                    print(json.dumps(error_response))
+                    sys.stdout.flush()
+                
+                except Exception as e:
+                    self.log_debug(f"Unexpected error: {str(e)}")
+                    error_response = {
+                        "jsonrpc": "2.0",
+                        "id": 1,
+                        "error": {
+                            "code": -32603,
+                            "message": f"Internal error: {str(e)}"
                         }
                     }
                     print(json.dumps(error_response))
