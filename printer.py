@@ -57,7 +57,6 @@ def prepare_print_content(text, min_lines=6):
     # 텍스트를 줄바꿈
     lines = wrap_text(text, max_width=40)
     
-    # 위아래 여백 추가
     lines.insert(0, "")  # 위에 1줄 여백
     
     # 아래 여백 계산
@@ -99,15 +98,14 @@ def create_esc_pos_content(lines):
             # 실패시 UTF-8 사용
             content.append(line.encode('utf-8') + b'\n')
     
-    # 추가 여백
-    content.append(b'\n')
     
     # 좌측 정렬로 복귀
     content.append(b'\x1B\x61\x00')  # ESC a 0
     
     # 용지 절단
-    content.append(b'\n\n\n')  # 추가 라인 피드
+  
     content.append(b'\x1D\x56\x00')  # GS V 0 (풀 컷)
+    # content.append(b'\x1D\x56\x42\x10')  # 피드 추가 후 풀 컷
     
     return b''.join(content)
 
