@@ -431,14 +431,6 @@ class MCPServer:
                 
                 try:
                     request = json.loads(line)
-                    
-                    # 요청 검증
-                    if not isinstance(request, dict):
-                        raise ValueError("Request must be a JSON object")
-                    
-                    if "jsonrpc" not in request:
-                        request["jsonrpc"] = "2.0"
-                    
                     response = await self.handle_request(request)
                     print(json.dumps(response, ensure_ascii=False))
                     sys.stdout.flush()
