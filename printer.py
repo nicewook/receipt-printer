@@ -51,14 +51,6 @@ def wrap_text(text, max_width=40):
     
     return lines
 
-def center_text(text, width=40):
-    """텍스트를 가운데 정렬"""
-    text_width = get_text_width(text)
-    if text_width >= width:
-        return text
-    
-    padding = (width - text_width) // 2
-    return " " * padding + text
 
 def prepare_print_content(text, min_lines=6):
     """출력할 내용 준비"""

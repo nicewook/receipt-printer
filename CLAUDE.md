@@ -52,19 +52,19 @@ gemini -p "This error occurs when running flutter build ios. What could be the c
 ### Legacy CLI Mode (Backward Compatibility)
 ```bash
 # Basic text printing
-python3 main.py "출력할 텍스트"
+python3 printer.py "출력할 텍스트"
 
 # Print to specific printer
-python3 main.py "텍스트" -p PRINTER_NAME
+python3 printer.py "텍스트" -p PRINTER_NAME
 
 # Preview output without printing
-python3 main.py "텍스트" --preview
+python3 printer.py "텍스트" --preview
 
 # List available printers
-python3 main.py --list-printers
+python3 printer.py --list-printers
 
 # Check printer status
-python3 main.py --status -p PRINTER_NAME
+python3 printer.py --status -p PRINTER_NAME
 ```
 
 ### Development Commands
@@ -95,7 +95,7 @@ brew services list | grep cups  # macOS
 ### Direct Architecture (MCP → Printer Utils)
 - **MCP Wrapper**: Direct stdio interface for Claude Desktop (`mcp_wrapper.py`)
 - **Printer Utils**: Core printer logic with ESC/POS commands (`printer.py`)
-- **Legacy CLI**: Backward compatibility with original script (`main.py`)
+- **Direct CLI**: CLI interface built into printer module (`printer.py`)
 - **Simplified Design**: Minimal layers for maximum performance
 
 ### Core Components

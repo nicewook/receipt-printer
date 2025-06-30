@@ -12,7 +12,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from printer import (
-    get_text_width, wrap_text, center_text, 
+    get_text_width, wrap_text,
     prepare_print_content, create_esc_pos_content,
     get_available_printers, check_printer_status
 )
@@ -59,23 +59,6 @@ class TestTextProcessing:
         for line in result:
             assert get_text_width(line) <= 20
     
-    def test_center_text_short(self):
-        """짧은 텍스트 가운데 정렬 테스트"""
-        result = center_text("Hi", width=10)
-        assert result == "    Hi"  # 4칸 패딩 + "Hi"
-        assert get_text_width(result) >= get_text_width("Hi")
-    
-    def test_center_text_korean(self):
-        """한글 텍스트 가운데 정렬 테스트"""
-        result = center_text("안녕", width=10)
-        expected_padding = (10 - 4) // 2  # (전체폭 - 텍스트폭) / 2
-        assert result.startswith(" " * expected_padding)
-    
-    def test_center_text_too_long(self):
-        """너무 긴 텍스트는 그대로 반환"""
-        long_text = "This is too long for the specified width"
-        result = center_text(long_text, width=10)
-        assert result == long_text
 
 
 class TestPrintContent:

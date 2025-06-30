@@ -212,7 +212,6 @@ pytest --cov=. --cov-report=html
 
 ```
 receipt-printer/
-├── main.py              # 레거시 CLI (호환성 유지)
 ├── printer.py     # 핵심 프린터 기능
 ├── mcp_wrapper.py       # MCP 프로토콜 인터페이스
 ├── requirements.txt     # 최소 의존성 목록
