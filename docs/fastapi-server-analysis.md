@@ -9,15 +9,6 @@
 ### 시스템 구조
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 graph TB
     subgraph "FastAPI Application Layer"
         APP[FastAPI App Instance]
@@ -71,14 +62,6 @@ graph TB
     FORMATTING --> UTILS
     PRINTING --> CUPS
     
-    style APP fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style VALIDATION fill:#fff0e6,stroke:#ff6600,color:#000000
-    style FORMATTING fill:#fff0e6,stroke:#ff6600,color:#000000
-    style PRINTING fill:#fff0e6,stroke:#ff6600,color:#000000
-    style CORS fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style HEADERS fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style WHITELIST fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style INJECTION fill:#e6ffe6,stroke:#00cc00,color:#000000
 ```
 
 ## 🌐 REST API 설계 분석
@@ -213,15 +196,6 @@ async def print_receipt(
 ### 다층 보안 체계
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 graph TB
     REQUEST[HTTP Request] --> CORS_CHECK{CORS 검증}
     CORS_CHECK -->|통과| HEADERS[보안 헤더 추가]
@@ -246,13 +220,6 @@ graph TB
     INJECTION --> SHLEX[shlex.quote 적용]
     SHLEX --> EXECUTION[안전한 실행]
     
-    style CORS_CHECK fill:#ffffcc,stroke:#cccc00,color:#000000
-    style VALIDATION fill:#fff0e6,stroke:#ff6600,color:#000000
-    style PROCESSING fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style INJECTION fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style CORS_ERROR fill:#ffe6e6,stroke:#cc0000,color:#000000
-    style VALIDATION_ERROR fill:#ffe6e6,stroke:#cc0000,color:#000000
-    style FORBIDDEN_ERROR fill:#ffe6e6,stroke:#cc0000,color:#000000
 ```
 
 ### 1. **CORS 보안**
@@ -388,15 +355,6 @@ def format_receipt_content(content: ReceiptContent, width: int = 40) -> List[str
 #### 🎨 **레이아웃 알고리즘 분석**
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 flowchart TD
     START[ReceiptContent 입력] --> HEADER{헤더 있음?}
     
@@ -440,10 +398,6 @@ flowchart TD
     FOOTER_CENTER --> FOOTER_BLANK[아래 여백 추가]
     FOOTER_BLANK --> END
     
-    style START fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style JUSTIFY fill:#fff0e6,stroke:#ff6600,color:#000000
-    style WIDTH_CHECK fill:#ffffcc,stroke:#cccc00,color:#000000
-    style END fill:#e6ffe6,stroke:#00cc00,color:#000000
 ```
 
 #### 💰 **가격 표시의 정교함**
@@ -624,15 +578,6 @@ if len(lines) > MAX_LINES:
 ### **백엔드 API 서버로서의 위치**
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 graph LR
     subgraph "MCP 생태계"
         CLAUDE[Claude Desktop] --> MCP[MCP Wrapper]
@@ -649,11 +594,6 @@ graph LR
         FASTAPI --> ERROR[에러 처리]
     end
     
-    style FASTAPI fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style VALIDATION fill:#fff0e6,stroke:#ff6600,color:#000000
-    style SECURITY fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style FORMATTING fill:#fff0e6,stroke:#ff6600,color:#000000
-    style ERROR fill:#ffffcc,stroke:#cccc00,color:#000000
 ```
 
 ### **프로토콜 변환 역할**

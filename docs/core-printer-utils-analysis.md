@@ -9,15 +9,6 @@
 ### 전체 아키텍처
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 graph TB
     subgraph "텍스트 처리 레이어"
         GET_WIDTH[get_text_width<br/>문자 폭 계산]
@@ -49,15 +40,6 @@ graph TB
     CHECK_STATUS --> MAIN
     PRINT_CUPS --> MAIN
     
-    style GET_WIDTH fill:#fff0e6,stroke:#ff6600,color:#000000
-    style WRAP fill:#fff0e6,stroke:#ff6600,color:#000000
-    style CENTER fill:#fff0e6,stroke:#ff6600,color:#000000
-    style PREPARE fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style CREATE_ESC fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style GET_PRINTERS fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style CHECK_STATUS fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style PRINT_CUPS fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style MAIN fill:#f5f5f5,stroke:#666666,color:#000000
 ```
 
 ## 🔤 한국어 텍스트 처리의 마스터피스
@@ -136,15 +118,6 @@ def wrap_text(text, max_width=40):
 
 **3. 상태 기반 처리**
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 stateDiagram-v2
     [*] --> 빈줄
     빈줄 --> 단어추가 : 첫 단어
@@ -285,15 +258,6 @@ def prepare_print_content(text, min_lines=6):
 #### 🎨 **적응형 여백 시스템**
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 graph LR
     subgraph "여백 계산 로직"
         TEXT1[1줄 텍스트] --> PAD3[하단 3줄 여백]
@@ -307,12 +271,6 @@ graph LR
         PAD1 --> BALANCE3[최소 여백 확보]
     end
     
-    style TEXT1 fill:#ffe6e6,stroke:#cc0000,color:#000000
-    style TEXT2 fill:#ffffcc,stroke:#cccc00,color:#000000
-    style TEXT3 fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style BALANCE1 fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style BALANCE2 fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style BALANCE3 fill:#e6f3ff,stroke:#0066cc,color:#000000
 ```
 
 #### 💡 **디자인 철학**
@@ -408,15 +366,6 @@ def print_to_cups(text, printer_name="BIXOLON_SRP_330II"):
 #### 🔄 **출력 프로세스 플로우**
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 sequenceDiagram
     participant T as 텍스트 입력
     participant P as prepare_print_content
@@ -460,15 +409,6 @@ def main():
 #### 🌊 **명령 흐름 제어**
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 flowchart TD
     START[명령행 파싱] --> CHECK_LIST{--list-printers?}
     CHECK_LIST -->|Yes| LIST[프린터 목록 출력]
@@ -490,10 +430,6 @@ flowchart TD
     SUCCESS --> END
     TROUBLESHOOT --> END
     
-    style START fill:#e6f3ff,stroke:#0066cc,color:#000000
-    style ERROR fill:#ffe6e6,stroke:#cc0000,color:#000000
-    style SUCCESS fill:#e6ffe6,stroke:#00cc00,color:#000000
-    style TROUBLESHOOT fill:#ffffcc,stroke:#cccc00,color:#000000
 ```
 
 #### 🎯 **사용자 경험 설계**

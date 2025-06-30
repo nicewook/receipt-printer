@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
     
     <!-- Prism.js 테마 -->
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
@@ -461,25 +461,16 @@
     <script>
         // Mermaid 초기화
         mermaid.initialize({
-            startOnLoad: true,
-            theme: 'base',
-            themeVariables: {
-                primaryColor: '#ffffff',
-                primaryTextColor: '#000000',
-                primaryBorderColor: '#000000',
-                lineColor: '#000000'
-            }
+            startOnLoad: false,  // 수동으로 제어
+            theme: 'default',
+            securityLevel: 'loose',
+            fontFamily: 'arial'
         });
         
-        // 마크다운 렌더링 설정
+        // 마크다운 렌더링 설정 (단순화)
         marked.setOptions({
-            highlight: function(code, lang) {
-                if (Prism.languages[lang]) {
-                    return Prism.highlight(code, Prism.languages[lang], lang);
-                }
-                return code;
-            },
-            breaks: true
+            breaks: true,
+            gfm: true
         });
         
         // 페이지 상태 관리
@@ -514,16 +505,64 @@
                 }
                 
                 const markdownText = await response.text();
+                console.log('Markdown loaded:', markdownText.substring(0, 200) + '...');
+                
                 const htmlContent = marked.parse(markdownText);
+                console.log('HTML generated:', typeof htmlContent, htmlContent.substring(0, 200) + '...');
                 
                 // 내용 렌더링
-                document.getElementById('markdownContent').innerHTML = htmlContent;
-                
-                // Mermaid 다이어그램 다시 렌더링
-                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+                if (typeof htmlContent === 'string') {
+                    document.getElementById('markdownContent').innerHTML = htmlContent;
+                } else {
+                    console.error('HTML content is not a string:', htmlContent);
+                    document.getElementById('markdownContent').innerHTML = '<p>오류: 마크다운 파싱 실패</p>';
+                    return;
+                }
                 
                 // 코드 하이라이팅 적용
                 Prism.highlightAll();
+                
+                // Mermaid 다이어그램 변환 및 렌더링
+                setTimeout(async () => {
+                    // mermaid 코드 블록을 찾아서 div로 변환
+                    const mermaidCodeBlocks = document.querySelectorAll('#markdownContent code.language-mermaid');
+                    console.log('Found mermaid code blocks:', mermaidCodeBlocks.length);
+                    
+                    mermaidCodeBlocks.forEach((codeBlock, index) => {
+                        try {
+                            const mermaidCode = codeBlock.textContent;
+                            console.log(`Mermaid code ${index}:`, mermaidCode.substring(0, 100) + '...');
+                            
+                            // 새 div 요소 생성
+                            const mermaidDiv = document.createElement('div');
+                            mermaidDiv.className = 'mermaid';
+                            mermaidDiv.textContent = mermaidCode;
+                            
+                            // 기존 pre 요소를 div로 교체
+                            const preElement = codeBlock.closest('pre');
+                            if (preElement) {
+                                preElement.parentNode.replaceChild(mermaidDiv, preElement);
+                            }
+                        } catch (error) {
+                            console.error('Error converting mermaid code block:', error);
+                        }
+                    });
+                    
+                    // mermaid 렌더링 실행
+                    const mermaidElements = document.querySelectorAll('#markdownContent .mermaid');
+                    console.log('Mermaid elements to render:', mermaidElements.length);
+                    
+                    if (mermaidElements.length > 0) {
+                        try {
+                            await mermaid.run({
+                                nodes: mermaidElements
+                            });
+                            console.log('Mermaid rendering completed');
+                        } catch (error) {
+                            console.error('Mermaid rendering error:', error);
+                        }
+                    }
+                }, 200);
                 
                 // URL 업데이트
                 window.history.pushState({page: 'doc', file: filename}, '', `#${filename}`);

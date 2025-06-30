@@ -22,15 +22,6 @@ content.append(b'\x1B\x40')  # ESC @
 
 #### 🔄 **초기화 범위**
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 graph TB
     ESC_AT[ESC @ 실행] --> BUFFER[프린트 버퍼 클리어]
     ESC_AT --> FONT[폰트 설정 초기화]
@@ -46,8 +37,6 @@ graph TB
     SIZE --> RESULT
     KANJI --> RESULT
     
-    style ESC_AT fill:#ffe6e6,stroke:#cc0000,color:#000000
-    style RESULT fill:#e6ffe6,stroke:#00cc00,color:#000000
 ```
 
 #### 💡 **왜 필요한가?**
@@ -99,15 +88,6 @@ content.append(b'\x1C\x26')      # FS & (한글 모드)
 
 #### 🔄 **모드 전환 효과**
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 stateDiagram-v2
     [*] --> ASCII모드
     ASCII모드 --> 한글모드 : FS &
@@ -150,15 +130,6 @@ content.append(b'\x1C\x2E')      # FS . (취소 후 설정)
 이것이 바로 **BIXOLON 프린터 한글 처리의 핵심 기법**입니다:
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 sequenceDiagram
     participant P as 프린터
     participant CP as 코드페이지
@@ -211,15 +182,6 @@ content.append(b'\x1B\x61\x01')  # 하드웨어 정렬 (부정확) - 충돌!
 #### 🔍 **충돌 분석**
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#ffffff',
-    'primaryTextColor': '#000000',
-    'primaryBorderColor': '#000000',
-    'lineColor': '#000000'
-  }
-}}%%
 graph TB
     INPUT[원본 텍스트: 안녕하세요 Hello] --> CENTER_TEXT[center_text 적용]
     CENTER_TEXT --> PADDED[공백 패딩 추가:<br/>          안녕하세요 Hello]
@@ -229,8 +191,6 @@ graph TB
     INPUT --> DIRECT[직접 ESC a 1만 적용]
     DIRECT --> SINGLE[하드웨어 정렬:<br/>     ⚠️ 한글 폭 계산 오류]
     
-    style DOUBLE fill:#ffe6e6,stroke:#cc0000,color:#000000
-    style SINGLE fill:#ffffcc,stroke:#cccc00,color:#000000
 ```
 
 #### 📊 **실제 차이점 예시**
