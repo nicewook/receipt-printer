@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "receipt-printer": {
-      "command": "/Users/hyunseokjeong/VibeCodingProject/receipt-printer/.venv/bin/python3",
-      "args": ["/Users/hyunseokjeong/VibeCodingProject/receipt-printer/mcp_wrapper.py"]
-    }
-  }
-}
