@@ -8,7 +8,7 @@
 - **한국어 완벽 지원**: EUC-KR 인코딩 및 ESC/POS 명령어
 - **간단한 텍스트 출력**: 200자 이내의 메모, 할일 목록 즉시 출력
 - **미리보기 모드**: 실제 출력 전 내용 확인 가능
-- **직접 호출 구조**: FastAPI 서버 없이 printer_utils 직접 호출
+- **직접 호출 구조**: FastAPI 서버 없이 printer 직접 호출
 
 ## 📋 시스템 요구사항
 
@@ -200,7 +200,7 @@ echo '{"method":"tools/call","id":3,"params":{"name":"list_printers","arguments"
 pytest
 
 # 특정 테스트 파일 실행
-pytest tests/test_printer_utils.py -v
+pytest tests/test_printer.py -v
 
 # 커버리지 포함 실행
 pytest --cov=. --cov-report=html
@@ -213,20 +213,20 @@ pytest --cov=. --cov-report=html
 ```
 receipt-printer/
 ├── main.py              # 레거시 CLI (호환성 유지)
-├── printer_utils.py     # 핵심 프린터 기능
+├── printer.py     # 핵심 프린터 기능
 ├── mcp_wrapper.py       # MCP 프로토콜 인터페이스
 ├── requirements.txt     # 최소 의존성 목록
 ├── CLAUDE.md           # AI 개발 가이드
 ├── claude_desktop_config.json  # 설정 예시
 └── tests/              # 테스트 스위트
-    ├── test_printer_utils.py
+    ├── test_printer.py
     └── test_mcp_integration.py
 ```
 
 ### 아키텍처
 
 ```
-Claude Desktop → JSON-RPC → mcp_wrapper.py → printer_utils.py → CUPS → 프린터
+Claude Desktop → JSON-RPC → mcp_wrapper.py → printer.py → CUPS → 프린터
 ```
 
 - **단순함**: HTTP 서버 없이 직접 함수 호출

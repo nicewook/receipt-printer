@@ -11,7 +11,7 @@ from unittest.mock import patch, MagicMock
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from printer_utils import (
+from printer import (
     get_text_width, wrap_text, center_text, 
     prepare_print_content, create_esc_pos_content,
     get_available_printers, check_printer_status
@@ -114,7 +114,7 @@ class TestPrintContent:
 class TestPrinterCommunication:
     """프린터 통신 함수 테스트 (모킹)"""
     
-    @patch('printer_utils.subprocess.run')
+    @patch('printer.subprocess.run')
     def test_get_available_printers_success(self, mock_run):
         """프린터 목록 조회 성공 테스트"""
         mock_run.return_value = MagicMock(
@@ -127,7 +127,7 @@ class TestPrinterCommunication:
         assert "HP_LaserJet" in result
         mock_run.assert_called_once_with(['lpstat', '-p'], capture_output=True, text=True)
     
-    @patch('printer_utils.subprocess.run')
+    @patch('printer.subprocess.run')
     def test_get_available_printers_failure(self, mock_run):
         """프린터 목록 조회 실패 테스트"""
         mock_run.return_value = MagicMock(returncode=1)
@@ -135,7 +135,7 @@ class TestPrinterCommunication:
         result = get_available_printers()
         assert result == []
     
-    @patch('printer_utils.subprocess.run')
+    @patch('printer.subprocess.run')
     def test_check_printer_status_success(self, mock_run):
         """프린터 상태 확인 성공 테스트"""
         mock_run.return_value = MagicMock(
@@ -147,7 +147,7 @@ class TestPrinterCommunication:
         assert "idle" in result
         assert "enabled" in result
     
-    @patch('printer_utils.subprocess.run')
+    @patch('printer.subprocess.run')
     def test_check_printer_status_not_found(self, mock_run):
         """존재하지 않는 프린터 상태 확인 테스트"""
         mock_run.return_value = MagicMock(returncode=1)

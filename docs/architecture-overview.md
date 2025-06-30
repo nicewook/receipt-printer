@@ -15,7 +15,7 @@ graph TB
         HTTP[HTTP API 클라이언트]
         MCP[MCP 래퍼<br/>mcp_wrapper.py]
         FASTAPI[FastAPI 서버<br/>server.py]
-        UTILS[프린터 유틸리티<br/>printer_utils.py]
+        UTILS[프린터 유틸리티<br/>printer.py]
         CONFIG[설정 관리<br/>config.py]
         SCHEMAS[데이터 모델<br/>schemas.py]
     end
@@ -94,7 +94,7 @@ sequenceDiagram
 - **사용 시나리오**: 스크립트 자동화, 터미널 사용자, 기존 워크플로우
 - **MCP 의존성**: **없음** - 삭제해도 MCP 시스템 정상 동작
 
-### 2. **Core Printer Utils (printer_utils.py)**
+### 2. **Core Printer Utils (printer.py)**
 - **역할**: 한국어 텍스트 처리 및 ESC/POS 명령어 생성의 핵심 로직
 - **특징**: 
   - 한글/영문 혼합 텍스트의 정확한 폭 계산
@@ -273,7 +273,7 @@ graph TB
 
 ### 🎯 **MCP 시스템 중심 분석 (main.py 제외)**
 
-1. **📁 Core Printer Utils (printer_utils.py)**
+1. **📁 Core Printer Utils (printer.py)**
    - 한국어 텍스트 처리 로직
    - ESC/POS 명령어 생성 과정
    - **MCP 시스템의 핵심 엔진**

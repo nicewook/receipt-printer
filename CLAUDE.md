@@ -74,7 +74,7 @@ pip install -r requirements.txt
 
 # Run tests
 pytest
-pytest tests/test_printer_utils.py -v
+pytest tests/test_printer.py -v
 pytest --cov=. --cov-report=html
 
 # Test MCP wrapper directly
@@ -94,18 +94,18 @@ brew services list | grep cups  # macOS
 
 ### Direct Architecture (MCP → Printer Utils)
 - **MCP Wrapper**: Direct stdio interface for Claude Desktop (`mcp_wrapper.py`)
-- **Printer Utils**: Core printer logic with ESC/POS commands (`printer_utils.py`)
+- **Printer Utils**: Core printer logic with ESC/POS commands (`printer.py`)
 - **Legacy CLI**: Backward compatibility with original script (`main.py`)
 - **Simplified Design**: Minimal layers for maximum performance
 
 ### Core Components
 
-1. **Text Processing Engine** (`printer_utils.py`):
+1. **Text Processing Engine** (`printer.py`):
    - Handles mixed-width characters (Korean=2, English=1)
    - Word-boundary-aware text wrapping at 40 characters
    - Accurate center alignment considering character widths
 
-2. **ESC/POS Protocol Handler** (`printer_utils.py`):
+2. **ESC/POS Protocol Handler** (`printer.py`):
    - Generates binary ESC/POS commands for printer control
    - Korean support via EUC-KR encoding and specific ESC commands
    - Paper cutting and text alignment commands
