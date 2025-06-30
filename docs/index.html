@@ -75,21 +75,12 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.15);
         }
         
-        .doc-card.overview {
-            border-left-color: #3498db;
-        }
-        
-        .doc-card.core {
-            border-left-color: #e74c3c;
-        }
-        
-        .doc-card.escpos {
-            border-left-color: #f39c12;
-        }
-        
-        .doc-card.fastapi {
-            border-left-color: #2ecc71;
-        }
+        .doc-card.overview { border-left-color: #3498db; }
+        .doc-card.core { border-left-color: #e74c3c; }
+        .doc-card.escpos { border-left-color: #f39c12; }
+        .doc-card.fastapi { border-left-color: #2ecc71; }
+        .doc-card.mcp { border-left-color: #9b59b6; }
+        .doc-card.default { border-left-color: #95a5a6; }
         
         .doc-card h2 {
             font-size: 1.5rem;
@@ -363,11 +354,11 @@
             <h3>📊 프로젝트 통계</h3>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-number">4</div>
+                    <div class="stat-number">8</div>
                     <div class="stat-label">분석 문서</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">337</div>
+                    <div class="stat-number">336</div>
                     <div class="stat-label">FastAPI 서버 라인</div>
                 </div>
                 <div class="stat-item">
@@ -390,18 +381,19 @@
         </div>
         
         <div class="docs-grid">
+            
             <div class="doc-card overview">
                 <span class="emoji">🏗️</span>
-                <h2>시스템 아키텍처 개요</h2>
+                <h2>영수증 프린터 시스템 아키텍처 개요</h2>
                 <div class="tags">
                     <span class="tag">전체구조</span>
                     <span class="tag">병렬시스템</span>
                     <span class="tag">Mermaid</span>
                 </div>
-                <p>전체 시스템의 구조와 컴포넌트 관계를 분석합니다. Legacy CLI와 Modern MCP 시스템의 병렬 구조, 데이터 플로우, 그리고 주요 설계 원칙을 다룹니다.</p>
+                <p>이 시스템은 **BIXOLON 영수증 프린터**를 제어하는 다층 아키텍처로, 한국어 완벽 지원과 현대적인 AI 통합을 목표로 합니다. 레거시 CLI부터 Claude Desktop 통합까지 다양한 사용자 인터페이스를 제공합니다.</p>
                 <a href="architecture-overview.md" class="btn">📖 읽어보기</a>
             </div>
-            
+        
             <div class="doc-card core">
                 <span class="emoji">⚙️</span>
                 <h2>Core Printer Utils 분석</h2>
@@ -411,9 +403,9 @@
                     <span class="tag">레이아웃</span>
                 </div>
                 <p>MCP 시스템의 핵심 엔진인 printer_utils.py를 심층 분석합니다. 한국어 텍스트 처리의 마스터피스와 적응형 레이아웃 시스템을 탐구합니다.</p>
-                <a href="core-printer-utils-analysis.md" class="btn">🔍 분석보기</a>
+                <a href="core-printer-utils-analysis.md" class="btn">📖 읽어보기</a>
             </div>
-            
+        
             <div class="doc-card escpos">
                 <span class="emoji">🖨️</span>
                 <h2>ESC/POS 명령어 심층분석</h2>
@@ -424,9 +416,9 @@
                     <span class="tag">이중정렬</span>
                 </div>
                 <p>ESC/POS 프로토콜의 정교한 구현을 분석합니다. FS & → FS . 시퀀스의 비밀과 이중 정렬 문제 발견까지, 프린터 프로토콜의 모든 것을 다룹니다.</p>
-                <a href="escpos-commands-deep-dive.md" class="btn">⚡ 심층분석</a>
+                <a href="escpos-commands-deep-dive.md" class="btn">📖 읽어보기</a>
             </div>
-            
+        
             <div class="doc-card fastapi">
                 <span class="emoji">🌐</span>
                 <h2>FastAPI Server 분석</h2>
@@ -437,13 +429,60 @@
                     <span class="tag">MCP백엔드</span>
                 </div>
                 <p>MCP 시스템의 백엔드 심장부를 완전 해부합니다. 엔터프라이즈급 보안, 자체 진단 에러 처리, 구조화된 데이터 처리의 모든 것을 분석합니다.</p>
-                <a href="fastapi-server-analysis.md" class="btn">🚀 서버분석</a>
+                <a href="fastapi-server-analysis.md" class="btn">📖 읽어보기</a>
             </div>
+        
+            <div class="doc-card mcp">
+                <span class="emoji">🔗</span>
+                <h2>MCP Wrapper 상세 분석</h2>
+                <div class="tags">
+                    <span class="tag">JSON-RPC</span>
+                    <span class="tag">Claude Desktop</span>
+                    <span class="tag">프로토콜</span>
+                    <span class="tag">비동기</span>
+                </div>
+                <p>`mcp_wrapper.py`는 Claude Desktop과 FastAPI 서버 간의 브리지 역할을 수행하는 핵심 컴포넌트입니다. Model Context Protocol (MCP)을 구현하여 JSON-RPC 2.0 기반의 통신을 제공합니다.</p>
+                <a href="mcp-wrapper-analysis.md" class="btn">📖 읽어보기</a>
+            </div>
+        
+            <div class="doc-card default">
+                <span class="emoji">📄</span>
+                <h2>📚 BIXOLON Receipt Printer - 문서 센터</h2>
+                <div class="tags">
+                    <span class="tag">문서</span>
+                </div>
+                <p>**추천**: 브라우저에서 아래 파일을 열어 네비게이션 가능한 문서 센터를 이용하세요!</p>
+                <a href="README.md" class="btn">📖 읽어보기</a>
+            </div>
+        
+            <div class="doc-card default">
+                <span class="emoji">📄</span>
+                <h2>개발 백로그 (Development Backlog)</h2>
+                <div class="tags">
+                    <span class="tag">문서</span>
+                </div>
+                <p>이 문서는 당장 수정할 필요는 없지만, 향후 프로젝트의 코드 품질과 유지보수성 향상을 위해 고려해볼 수 있는 개선 항목들을 기록합니다.</p>
+                <a href="backlog.md" class="btn">📖 읽어보기</a>
+            </div>
+        
+            <div class="doc-card default">
+                <span class="emoji">📄</span>
+                <h2>Receipt Printer Project Description</h2>
+                <div class="tags">
+                    <span class="tag">문서</span>
+                </div>
+                <p>이 프로젝트는 **BIXOLON SRP-330II 영수증 프린터**를 사용하여 텍스트를 출력하는 Python 기반 애플리케이션입니다. CUPS(Common Unix Printing System)를 통해 프린터와 통신하며, 한글과 영문 텍스트를 모두 지원합니다.</p>
+                <a href="description.md" class="btn">📖 읽어보기</a>
+            </div>
+        
         </div>
         
         <div class="footer">
             <p>🤖 Generated with <a href="https://claude.ai/code" style="color: #fff;">Claude Code</a></p>
             <p>© 2024 BIXOLON Receipt Printer Documentation</p>
+            <p style="font-size: 0.8rem; margin-top: 10px;">
+                Last updated: 2024-12-30 07:39:09
+            </p>
         </div>
     </div>
     
@@ -488,10 +527,14 @@
         // 마크다운 파일 로드 및 렌더링
         async function loadMarkdown(filename) {
             const titleMap = {
-                'architecture-overview.md': '시스템 아키텍처 개요',
-                'core-printer-utils-analysis.md': 'Core Printer Utils 분석',
-                'escpos-commands-deep-dive.md': 'ESC/POS 명령어 심층분석',
-                'fastapi-server-analysis.md': 'FastAPI Server 분석'
+                "architecture-overview.md": "영수증 프린터 시스템 아키텍처 개요",
+                "core-printer-utils-analysis.md": "Core Printer Utils 분석",
+                "escpos-commands-deep-dive.md": "ESC/POS 명령어 심층분석",
+                "fastapi-server-analysis.md": "FastAPI Server 분석",
+                "mcp-wrapper-analysis.md": "MCP Wrapper 상세 분석",
+                "README.md": "📚 BIXOLON Receipt Printer - 문서 센터",
+                "backlog.md": "개발 백로그 (Development Backlog)",
+                "description.md": "Receipt Printer Project Description"
             };
             
             try {
