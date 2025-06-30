@@ -1,73 +1,47 @@
 #!/usr/bin/env python3
 """
 MCP (Model Context Protocol) 래퍼
-Claude Desktop과 FastAPI 서버 간의 JSON-RPC 인터페이스
+Claude Desktop과 printer_utils 간의 직접 인터페이스
 """
 
 import json
 import sys
 import os
 import asyncio
-import aiohttp
+import printer_utils
 from typing import Any, Dict, List, Optional, Union
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 
 # MCP 프로토콜 관련 상수
 MCP_VERSION = "2024-11-05"
 SERVER_NAME = "receipt-printer"
 SERVER_VERSION = "1.0.0"
 
-# 환경 변수에서 설정 읽기
-API_URL = os.getenv("PRINTER_API_URL", "http://127.0.0.1:8000")
+# MCP 서버 설정 (환경변수 의존성 제거)
 
 class MCPServer:
     """MCP 서버 구현"""
     
     def __init__(self):
-        self.session: Optional[aiohttp.ClientSession] = None
+        # ThreadPoolExecutor로 동기 함수들을 비동기로 실행
+        self.executor = ThreadPoolExecutor(max_workers=2)
         self.tools = {
             "print_receipt": {
                 "name": "print_receipt",
-                "description": "프린터로 영수증을 출력합니다",
+                "description": "간단한 메모, 할일 목록, 텍스트를 영수증으로 출력합니다. '>' 로 시작하는 메시지나 짧은 텍스트를 즉시 출력할 때 사용하세요.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "출력할 텍스트 (200자 이내, 예: '우유 사오기', '회의 준비사항')",
+                            "maxLength": 200
+                        },
                         "printer_name": {
                             "type": "string",
-                            "description": "프린터 이름 (예: BIXOLON_SRP_330II)",
+                            "description": "프린터 이름",
                             "default": "BIXOLON_SRP_330II"
-                        },
-                        "content": {
-                            "type": "object",
-                            "properties": {
-                                "header": {
-                                    "type": "string",
-                                    "description": "헤더 텍스트 (선택사항)"
-                                },
-                                "items": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "name": {"type": "string", "description": "항목명"},
-                                            "quantity": {"type": "integer", "description": "수량"},
-                                            "price": {"type": "number", "description": "단가"},
-                                            "total": {"type": "number", "description": "합계"}
-                                        },
-                                        "required": ["name"]
-                                    },
-                                    "description": "영수증 항목 목록 (선택사항)"
-                                },
-                                "footer": {
-                                    "type": "string",
-                                    "description": "푸터 텍스트 (선택사항)"
-                                },
-                                "text": {
-                                    "type": "string",
-                                    "description": "단순 텍스트 출력 (items 대신 사용 가능)"
-                                }
-                            },
-                            "description": "출력할 내용"
                         },
                         "preview": {
                             "type": "boolean",
@@ -75,7 +49,7 @@ class MCPServer:
                             "default": False
                         }
                     },
-                    "required": ["content"]
+                    "required": ["text"]
                 }
             },
             "list_printers": {
@@ -101,87 +75,22 @@ class MCPServer:
                     "required": ["printer_name"]
                 }
             },
-            "preview_receipt": {
-                "name": "preview_receipt",
-                "description": "영수증 출력 미리보기를 제공합니다",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "content": {
-                            "type": "object",
-                            "properties": {
-                                "header": {"type": "string", "description": "헤더 텍스트"},
-                                "items": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "name": {"type": "string"},
-                                            "quantity": {"type": "integer"},
-                                            "price": {"type": "number"},
-                                            "total": {"type": "number"}
-                                        },
-                                        "required": ["name"]
-                                    }
-                                },
-                                "footer": {"type": "string", "description": "푸터 텍스트"},
-                                "text": {"type": "string", "description": "단순 텍스트"}
-                            }
-                        }
-                    },
-                    "required": ["content"]
-                }
-            }
         }
 
-    async def __aenter__(self):
-        """비동기 컨텍스트 매니저 진입"""
-        self.session = aiohttp.ClientSession()
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """비동기 컨텍스트 매니저 종료"""
-        if self.session:
-            await self.session.close()
+    def __del__(self):
+        """소멸자에서 ThreadPoolExecutor 정리"""
+        if hasattr(self, 'executor'):
+            self.executor.shutdown(wait=True)
 
     def log_debug(self, message: str):
         """디버그 로그 (stderr로 출력)"""
         print(f"[DEBUG] {datetime.now().isoformat()} - {message}", file=sys.stderr)
 
-    async def make_api_request(self, method: str, endpoint: str, data: Optional[Dict] = None) -> Dict[str, Any]:
-        """FastAPI 서버에 HTTP 요청"""
-        if not self.session:
-            raise RuntimeError("Session not initialized")
-        
-        url = f"{API_URL}{endpoint}"
-        headers = {
-            "Content-Type": "application/json"
-        }
-        
-        try:
-            if method.upper() == "GET":
-                async with self.session.get(url, headers=headers) as response:
-                    result = await response.json()
-                    if response.status >= 400:
-                        raise aiohttp.ClientError(f"HTTP {response.status}: {result.get('message', 'Unknown error')}")
-                    return result
-            
-            elif method.upper() == "POST":
-                async with self.session.post(url, headers=headers, json=data) as response:
-                    result = await response.json()
-                    if response.status >= 400:
-                        raise aiohttp.ClientError(f"HTTP {response.status}: {result.get('message', 'Unknown error')}")
-                    return result
-            
-            else:
-                raise ValueError(f"Unsupported HTTP method: {method}")
-        
-        except aiohttp.ClientError as e:
-            self.log_debug(f"API request failed: {str(e)}")
-            raise
-        except Exception as e:
-            self.log_debug(f"Unexpected error in API request: {str(e)}")
-            raise
+    async def _run_sync(self, func, *args):
+        """동기 함수를 비동기로 실행"""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(self.executor, func, *args)
+    
 
     async def handle_tool_call(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """MCP 도구 호출 처리"""
@@ -192,8 +101,6 @@ class MCPServer:
                 return await self._handle_list_printers(arguments)
             elif tool_name == "get_printer_status":
                 return await self._handle_get_printer_status(arguments)
-            elif tool_name == "preview_receipt":
-                return await self._handle_preview_receipt(arguments)
             else:
                 raise ValueError(f"Unknown tool: {tool_name}")
         
@@ -210,131 +117,146 @@ class MCPServer:
             }
 
     async def _handle_print_receipt(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        """영수증 출력 처리"""
+        """단순 텍스트 출력 처리"""
+        text = arguments.get("text", "").strip()
         printer_name = arguments.get("printer_name", "BIXOLON_SRP_330II")
-        content = arguments.get("content", {})
         preview = arguments.get("preview", False)
         
-        request_data = {
-            "content": content,
-            "preview": preview
-        }
+        # 텍스트 길이 검증
+        if not text:
+            return {
+                "isError": True,
+                "content": [{
+                    "type": "text",
+                    "text": "❌ 출력할 텍스트가 비어있습니다."
+                }]
+            }
+        
+        if len(text) > 200:
+            return {
+                "isError": True,
+                "content": [{
+                    "type": "text",
+                    "text": f"❌ 텍스트가 너무 깁니다. ({len(text)}/200자) 200자 이내로 입력하세요."
+                }]
+            }
         
         if preview:
-            # 미리보기 모드
-            result = await self.make_api_request("POST", f"/printers/{printer_name}/print", request_data)
-            preview_lines = result.get("preview", [])
-            preview_text = "\n".join(f"|{line:<40}|" for line in preview_lines)
-            
-            return {
-                "content": [
-                    {
+            # 미리보기 생성
+            try:
+                lines = await self._run_sync(printer_utils.prepare_print_content, text)
+                preview_text = "\n".join(f"|{line:<40}|" for line in lines)
+                return {
+                    "content": [{
                         "type": "text",
-                        "text": f"📄 출력 미리보기:\n{'=' * 42}\n{preview_text}\n{'=' * 42}\n총 {len(preview_lines)}줄"
-                    }
-                ]
-            }
+                        "text": f"📄 출력 미리보기 ({len(text)}자):\n{'=' * 42}\n{preview_text}\n{'=' * 42}\n총 {len(lines)}줄"
+                    }]
+                }
+            except Exception as e:
+                return {
+                    "isError": True,
+                    "content": [{
+                        "type": "text",
+                        "text": f"❌ 미리보기 생성 실패: {str(e)}"
+                    }]
+                }
         else:
             # 실제 출력
-            result = await self.make_api_request("POST", f"/printers/{printer_name}/print", request_data)
-            
-            message = result.get("message", "출력 완료")
-            job_id = result.get("job_id")
-            lines_printed = result.get("lines_printed")
-            
-            response_text = f"✅ {message}"
-            if job_id:
-                response_text += f"\n📝 작업 ID: {job_id}"
-            if lines_printed:
-                response_text += f"\n📊 출력 라인 수: {lines_printed}"
-            
-            return {
-                "content": [
-                    {
-                        "type": "text",
-                        "text": response_text
+            try:
+                success = await self._run_sync(printer_utils.print_to_cups, text, printer_name)
+                if success:
+                    return {
+                        "content": [{
+                            "type": "text", 
+                            "text": f"✅ 출력 완료: {len(text)}자 → {printer_name}"
+                        }]
                     }
-                ]
-            }
+                else:
+                    return {
+                        "isError": True,
+                        "content": [{
+                            "type": "text",
+                            "text": f"❌ 출력 실패: {printer_name}"
+                        }]
+                    }
+            except Exception as e:
+                return {
+                    "isError": True,
+                    "content": [{
+                        "type": "text",
+                        "text": f"❌ 출력 오류: {str(e)}"
+                    }]
+                }
 
     async def _handle_list_printers(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        """프린터 목록 조회 처리"""
-        result = await self.make_api_request("GET", "/printers")
-        
-        printers = result.get("printers", [])
-        total_count = result.get("total_count", 0)
-        
-        if not printers:
-            return {
-                "content": [
-                    {
+        """프린터 목록 조회 처리 (직접 호출)"""
+        try:
+            printers = await self._run_sync(printer_utils.get_available_printers)
+            
+            if not printers:
+                return {
+                    "content": [{
                         "type": "text",
-                        "text": "❌ 사용 가능한 프린터가 없습니다."
-                    }
-                ]
-            }
-        
-        printer_list = ["🖨️  사용 가능한 프린터:"]
-        for printer in printers:
-            status_icon = "✅" if printer.get("available") else "❌"
-            printer_list.append(f"  {status_icon} {printer['name']}")
-            if printer.get("status"):
-                printer_list.append(f"     상태: {printer['status']}")
-        
-        printer_list.append(f"\n총 {total_count}개 프린터")
-        
-        return {
-            "content": [
-                {
+                        "text": "❌ 사용 가능한 프린터가 없습니다.\n💡 CUPS에 프린터가 등록되어 있는지 확인하세요: lpstat -p"
+                    }]
+                }
+            
+            printer_list = ["🖨️  사용 가능한 프린터:"]
+            for printer in printers:
+                try:
+                    status = await self._run_sync(printer_utils.check_printer_status, printer)
+                    printer_list.append(f"  ✅ {printer}")
+                    printer_list.append(f"     상태: {status}")
+                except Exception as e:
+                    printer_list.append(f"  ❌ {printer} (상태 확인 실패: {str(e)})")
+            
+            printer_list.append(f"\n총 {len(printers)}개 프린터")
+            
+            return {
+                "content": [{
                     "type": "text",
                     "text": "\n".join(printer_list)
-                }
-            ]
-        }
+                }]
+            }
+        except Exception as e:
+            return {
+                "isError": True,
+                "content": [{
+                    "type": "text",
+                    "text": f"❌ 프린터 목록 조회 실패: {str(e)}"
+                }]
+            }
 
     async def _handle_get_printer_status(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        """프린터 상태 확인 처리"""
+        """프린터 상태 확인 처리 (직접 호출)"""
         printer_name = arguments.get("printer_name", "BIXOLON_SRP_330II")
         
-        result = await self.make_api_request("GET", f"/printers/{printer_name}/status")
-        
-        status_icon = "✅" if result.get("available") else "❌"
-        response_text = f"📊 프린터 상태: {printer_name}\n"
-        response_text += f"{status_icon} {result.get('status', 'Unknown')}\n"
-        response_text += f"🕒 확인 시각: {result.get('last_checked', 'Unknown')}"
-        
-        return {
-            "content": [
-                {
+        try:
+            status = await self._run_sync(printer_utils.check_printer_status, printer_name)
+            
+            # 상태 메시지에서 'idle'나 'processing' 같은 키워드로 가용성 판단
+            is_available = "idle" in status.lower() or "accepting" in status.lower()
+            status_icon = "✅" if is_available else "❌"
+            
+            response_text = f"📊 프린터 상태: {printer_name}\n"
+            response_text += f"{status_icon} {status}\n"
+            response_text += f"🕒 확인 시각: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            
+            return {
+                "content": [{
                     "type": "text",
                     "text": response_text
-                }
-            ]
-        }
-
-    async def _handle_preview_receipt(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
-        """영수증 미리보기 처리 (실제 출력하지 않음)"""
-        content = arguments.get("content", {})
-        
-        request_data = {
-            "content": content,
-            "preview": True
-        }
-        
-        # 기본 프린터로 미리보기 요청
-        result = await self.make_api_request("POST", "/printers/BIXOLON_SRP_330II/print", request_data)
-        
-        preview_lines = result.get("preview", [])
-        preview_text = "\n".join(f"|{line:<40}|" for line in preview_lines)
-        
-        return {
-            "content": [
-                {
+                }]
+            }
+        except Exception as e:
+            return {
+                "isError": True,
+                "content": [{
                     "type": "text",
-                    "text": f"📄 영수증 미리보기:\n{'=' * 42}\n{preview_text}\n{'=' * 42}\n총 {len(preview_lines)}줄"
-                }
-            ]
-        }
+                    "text": f"❌ 프린터 상태 확인 실패: {str(e)}"
+                }]
+            }
+
 
     async def handle_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """MCP 요청 처리"""
@@ -468,8 +390,13 @@ class MCPServer:
 
 async def main():
     """메인 함수"""
-    async with MCPServer() as server:
+    server = MCPServer()
+    try:
         await server.run()
+    finally:
+        # ThreadPoolExecutor 정리
+        if hasattr(server, 'executor'):
+            server.executor.shutdown(wait=True)
 
 if __name__ == "__main__":
     asyncio.run(main())

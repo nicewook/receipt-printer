@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code), AND Gemini CLI when
 
 ## Project Overview
 
-This is a single-file Python application (`main.py`) for printing Korean and English text to BIXOLON SRP-330II receipt printers via CUPS. The project prioritizes simplicity and Korean language support over complex architecture.
+This is a simplified Python application for printing Korean and English text (200 characters max) to BIXOLON SRP-330II receipt printers via CUPS. The project features a direct MCP interface that calls printer utilities without HTTP server dependencies, prioritizing simplicity and Korean language support.
 
 ## AI Collaboration (Claude Code + Gemini)
 Claude Code can collaborate with Gemini to solve complex problems through bash commands. This enables a problem-solving dialogue between the two AI assistants.
@@ -31,13 +31,22 @@ gemini -p "This error occurs when running flutter build ios. What could be the c
 
 ### MCP Server Mode (Recommended)
 ```bash
-# 1. Start FastAPI backend server
-python3 server.py
-# or
-uvicorn server:app --host 127.0.0.1 --port 8000 --reload
+# 1. Configure Claude Desktop (see README.md)
+# 2. Use through Claude Desktop interface
+# Example: "> 우유 사오기" or "프린터 상태 확인해줘"
+```
 
-# 2. Configure Claude Desktop (see README.md)
-# 3. Use through Claude Desktop interface
+### MCP Tools Available
+```bash
+# Available tools in Claude Desktop:
+# 1. print_receipt - 간단한 메모, 할일 목록 출력 (200자 이내)
+# 2. list_printers - 사용 가능한 프린터 목록 조회
+# 3. get_printer_status - 특정 프린터의 상태 확인
+
+# Trigger patterns for Claude Desktop:
+# "> 우유 사오기" - 직접 텍스트 출력
+# "프린터 목록 보여줘" - 프린터 목록 조회
+# "프린터 상태 확인" - 상태 체크
 ```
 
 ### Legacy CLI Mode (Backward Compatibility)
@@ -68,11 +77,13 @@ pytest
 pytest tests/test_printer_utils.py -v
 pytest --cov=. --cov-report=html
 
-# Run FastAPI development server
-python3 server.py
-
 # Test MCP wrapper directly
 python3 mcp_wrapper.py
+
+# Example MCP commands
+echo '{"method":"tools/list","id":1}' | python3 mcp_wrapper.py
+echo '{"method":"tools/call","id":2,"params":{"name":"print_receipt","arguments":{"text":"테스트","preview":true}}}' | python3 mcp_wrapper.py
+echo '{"method":"tools/call","id":3,"params":{"name":"list_printers","arguments":{}}}' | python3 mcp_wrapper.py
 
 # Check CUPS printer setup (system dependency)
 lpstat -p
@@ -81,11 +92,11 @@ brew services list | grep cups  # macOS
 
 ## Architecture
 
-### Hybrid Architecture (MCP + FastAPI)
-- **FastAPI Backend**: Core printer logic with REST endpoints (`server.py`)
-- **MCP Wrapper**: Lightweight stdio interface for Claude Desktop (`mcp_wrapper.py`)
+### Direct Architecture (MCP → Printer Utils)
+- **MCP Wrapper**: Direct stdio interface for Claude Desktop (`mcp_wrapper.py`)
+- **Printer Utils**: Core printer logic with ESC/POS commands (`printer_utils.py`)
 - **Legacy CLI**: Backward compatibility with original script (`main.py`)
-- **Modular Design**: Separated concerns across multiple files
+- **Simplified Design**: Minimal layers for maximum performance
 
 ### Core Components
 
@@ -99,27 +110,17 @@ brew services list | grep cups  # macOS
    - Korean support via EUC-KR encoding and specific ESC commands
    - Paper cutting and text alignment commands
 
-3. **FastAPI REST Server** (`server.py`):
-   - Secure API endpoints with authentication
-   - Pydantic data validation and structured receipts
-   - Comprehensive error handling and troubleshooting
-
-4. **MCP Protocol Interface** (`mcp_wrapper.py`):
+3. **MCP Protocol Interface** (`mcp_wrapper.py`):
    - JSON-RPC communication with Claude Desktop
-   - Tool definitions for receipt printing operations
-   - HTTP-to-MCP protocol translation
-
-5. **Security & Configuration** (`config.py`, `schemas.py`):
-   - API key authentication and printer whitelisting
-   - Input validation and sanitization
-   - Structured data models for receipts
+   - Direct tool calls to printer utilities
+   - Simple text validation (200 characters max)
+   - ThreadPoolExecutor for async/sync bridge
 
 ### Data Flow
 **MCP Mode (Recommended):**
 1. Claude Desktop → JSON-RPC request → MCP Wrapper
-2. MCP Wrapper → HTTP API request → FastAPI Server
-3. FastAPI → Data validation → Printer Utils
-4. ESC/POS generation → CUPS execution → Response chain
+2. MCP Wrapper → Direct function call → Printer Utils
+3. ESC/POS generation → CUPS execution → Response
 
 **Legacy CLI Mode:**
 1. Text input → Character width calculation
@@ -135,19 +136,20 @@ brew services list | grep cups  # macOS
 
 ## System Requirements
 
-- **Runtime**: Python 3.x (no external packages)
+- **Runtime**: Python 3.x (minimal dependencies)
 - **System Service**: CUPS installed and running
 - **Hardware**: ESC/POS compatible receipt printer
 - **OS**: macOS/Linux (CUPS-supported systems)
+- **Text Limit**: 200 characters maximum per print job
 
 ## Development Notes
 
 - **Testing Framework**: Comprehensive pytest suite with unit, integration, and MCP tests
-- **Modular Package Structure**: Organized across multiple specialized files
-- **Configuration Management**: Centralized config with environment variable support
-- **Security Features**: API authentication, input validation, and printer whitelisting
-- **Error Handling**: Multi-layer error translation from CUPS → HTTP → MCP → User
+- **Simplified Architecture**: Direct function calls without HTTP middleware
+- **Text Validation**: 200-character limit with Korean/English mixed-width support
+- **Error Handling**: Direct error translation from CUPS → MCP → User
 - **File Management**: Automatic temporary file cleanup after printing
+- **Async Bridge**: ThreadPoolExecutor for sync/async function calls
 
 ## Code Conventions
 

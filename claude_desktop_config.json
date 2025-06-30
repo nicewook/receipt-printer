@@ -2,10 +2,7 @@
   "mcpServers": {
     "receipt-printer": {
       "command": "/Users/hyunseokjeong/VibeCodingProject/receipt-printer/.venv/bin/python3",
-      "args": ["/Users/hyunseokjeong/VibeCodingProject/receipt-printer/mcp_wrapper.py"],
-      "env": {
-        "PRINTER_API_URL": "http://127.0.0.1:8000"
-      }
+      "args": ["/Users/hyunseokjeong/VibeCodingProject/receipt-printer/mcp_wrapper.py"]
     }
   }
 }
