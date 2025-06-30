@@ -3,688 +3,953 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIXOLON Receipt Printer - 문서 센터</title>
+    <title>BIXOLON Receipt Printer Documentation</title>
     
-    <!-- 마크다운 렌더링 라이브러리 -->
+    <!-- 외부 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
-    
-    <!-- Prism.js 테마 -->
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     
+    <!-- Font Awesome 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1e40af;
+            --bg-color: #ffffff;
+            --sidebar-bg: #f8fafc;
+            --sidebar-border: #e2e8f0;
+            --text-color: #1f2937;
+            --text-muted: #6b7280;
+            --hover-bg: #f1f5f9;
+            --active-bg: #dbeafe;
+            --border-color: #e5e7eb;
+            --code-bg: #f3f4f6;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] {
+            --primary-color: #60a5fa;
+            --primary-dark: #3b82f6;
+            --bg-color: #111827;
+            --sidebar-bg: #1f2937;
+            --sidebar-border: #374151;
+            --text-color: #f9fafb;
+            --text-muted: #9ca3af;
+            --hover-bg: #374151;
+            --active-bg: #1e3a8a;
+            --border-color: #4b5563;
+            --code-bg: #374151;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            color: var(--text-color);
+            background: var(--bg-color);
+            transition: all 0.3s ease;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-            color: white;
-        }
-        
-        .header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .docs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
-        }
-        
-        .doc-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-left: 5px solid;
-        }
-        
-        .doc-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        }
-        
-        .doc-card.overview { border-left-color: #3498db; }
-        .doc-card.core { border-left-color: #e74c3c; }
-        .doc-card.escpos { border-left-color: #f39c12; }
-        .doc-card.fastapi { border-left-color: #2ecc71; }
-        .doc-card.mcp { border-left-color: #9b59b6; }
-        .doc-card.default { border-left-color: #95a5a6; }
-        
-        .doc-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-        
-        .doc-card .emoji {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-        
-        .doc-card p {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-        
-        .doc-card .tags {
+
+        /* 레이아웃 */
+        .gitbook-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
+            height: 100vh;
+            overflow: hidden;
         }
-        
-        .tag {
-            background: #f8f9fa;
-            color: #495057;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            border: 1px solid #e9ecef;
+
+        /* 사이드바 */
+        .sidebar {
+            width: 300px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+
+        .sidebar.collapsed {
+            width: 0;
+            border: none;
+        }
+
+        /* 사이드바 헤더 */
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--sidebar-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        /* 테마 토글 */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            color: var(--text-color);
+        }
+
+        /* 검색 박스 */
+        .search-container {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--sidebar-border);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* 네비게이션 */
+        .nav-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 15px;
+        }
+
+        .nav-section-title {
+            padding: 8px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .nav-item {
+            margin: 2px 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            color: var(--text-color);
             text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 25px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--hover-bg);
+        }
+
+        .nav-link.active {
+            background: var(--active-bg);
+            color: var(--primary-color);
             font-weight: 500;
-            transition: opacity 0.3s ease;
         }
-        
-        .btn:hover {
-            opacity: 0.9;
-        }
-        
-        .stats {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        
-        .stats h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
+
+        .nav-link i {
+            margin-right: 10px;
+            width: 16px;
             text-align: center;
+            font-size: 14px;
         }
-        
+
+        .nav-link .badge {
+            margin-left: auto;
+            background: var(--primary-color);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 상단 바 */
+        .top-bar {
+            height: 60px;
+            background: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 18px;
+            margin-right: 16px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .menu-toggle:hover {
+            background: var(--hover-bg);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            margin: 0 8px;
+            color: var(--text-muted);
+        }
+
+        .breadcrumb-home {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* 콘텐츠 영역 */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .content-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        /* 홈페이지 스타일 */
+        .home-content {
+            text-align: center;
+            padding: 60px 32px;
+        }
+
+        .home-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 16px;
+        }
+
+        .home-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat-card {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
             text-align: center;
+            transition: all 0.2s ease;
         }
-        
-        .stat-item {
-            padding: 15px;
-            border-radius: 10px;
-            background: #f8f9fa;
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
-        
+
         .stat-number {
             font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 8px;
         }
-        
+
         .stat-label {
-            color: #666;
             font-size: 0.9rem;
-            margin-top: 5px;
+            color: var(--text-muted);
+            font-weight: 500;
         }
-        
-        .footer {
-            text-align: center;
-            color: white;
-            opacity: 0.8;
-            margin-top: 50px;
-        }
-        
-        /* 마크다운 뷰어 스타일 */
-        .viewer-container {
-            display: none;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        .viewer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .back-btn {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s ease;
-        }
-        
-        .back-btn:hover {
-            background: #5a6268;
-        }
-        
-        .document-title {
-            color: #2c3e50;
-            font-size: 1.5rem;
-            margin: 0;
-        }
-        
-        /* GitHub 스타일 마크다운 */
-        .markdown-content {
-            line-height: 1.6;
-            color: #24292e;
-        }
-        
-        .markdown-content h1 {
-            font-size: 2em;
-            margin: 0.67em 0;
-            padding-bottom: 0.3em;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        
-        .markdown-content h2 {
-            font-size: 1.5em;
-            margin: 1em 0 0.5em 0;
-            padding-bottom: 0.3em;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        
-        .markdown-content h3 {
-            font-size: 1.25em;
-            margin: 1em 0 0.5em 0;
-        }
-        
-        .markdown-content p {
-            margin: 1em 0;
-        }
-        
-        .markdown-content ul, .markdown-content ol {
-            margin: 1em 0;
-            padding-left: 2em;
-        }
-        
-        .markdown-content li {
-            margin: 0.5em 0;
-        }
-        
-        .markdown-content blockquote {
-            margin: 1em 0;
-            padding: 0 1em;
-            color: #6a737d;
-            border-left: 4px solid #dfe2e5;
-        }
-        
-        .markdown-content table {
-            border-collapse: collapse;
-            margin: 1em 0;
-            width: 100%;
-        }
-        
-        .markdown-content th, .markdown-content td {
-            border: 1px solid #dfe2e5;
-            padding: 8px 12px;
+
+        .quick-start {
             text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
         }
-        
-        .markdown-content th {
-            background-color: #f6f8fa;
+
+        .quick-start h3 {
+            font-size: 1.3rem;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            color: var(--text-color);
+        }
+
+        .feature-list i {
+            color: var(--primary-color);
+            margin-right: 12px;
+            width: 16px;
+        }
+
+        /* 문서 콘텐츠 스타일 */
+        .doc-content h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .doc-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 32px 0 16px 0;
+            position: relative;
+        }
+
+        .doc-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 24px 0 12px 0;
+        }
+
+        .doc-content p {
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+
+        .doc-content pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .doc-content code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .doc-content pre code {
+            background: none;
+            padding: 0;
+            border: none;
+        }
+
+        .doc-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 20px 0;
+            padding: 16px 20px;
+            background: var(--sidebar-bg);
+            border-radius: 0 6px 6px 0;
+        }
+
+        .doc-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .doc-content th,
+        .doc-content td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .doc-content th {
+            background: var(--sidebar-bg);
             font-weight: 600;
         }
-        
-        .markdown-content code {
-            background-color: rgba(27,31,35,0.05);
-            border-radius: 3px;
-            font-size: 85%;
-            margin: 0;
-            padding: 0.2em 0.4em;
+
+        .doc-content tr:hover {
+            background: var(--hover-bg);
         }
-        
-        .markdown-content pre {
-            background-color: #f6f8fa;
-            border-radius: 6px;
-            font-size: 85%;
-            line-height: 1.45;
-            overflow: auto;
-            padding: 16px;
-            margin: 1em 0;
+
+        .doc-content ul,
+        .doc-content ol {
+            margin: 16px 0;
+            padding-left: 24px;
         }
-        
-        .markdown-content pre code {
-            background: transparent;
-            border: 0;
-            display: inline;
-            line-height: inherit;
-            margin: 0;
-            overflow: visible;
-            padding: 0;
-            white-space: pre;
-            word-wrap: normal;
+
+        .doc-content li {
+            margin: 8px 0;
         }
-        
-        /* Mermaid 다이어그램 스타일 */
-        .markdown-content .mermaid {
+
+        /* Mermaid 다이어그램 */
+        .mermaid {
             text-align: center;
-            margin: 2em 0;
+            margin: 24px 0;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 20px;
         }
-        
+
+        /* 반응형 */
         @media (max-width: 768px) {
-            .header h1 {
+            .sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                z-index: 20;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar.collapsed {
+                width: 300px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .content-wrapper {
+                padding: 24px 16px;
+            }
+
+            .home-content {
+                padding: 40px 16px;
+            }
+
+            .home-title {
                 font-size: 2rem;
             }
-            
-            .container {
-                padding: 15px;
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
             }
-            
-            .doc-card {
-                padding: 20px;
-            }
-            
-            .viewer-container {
-                margin: 10px;
-                padding: 15px;
-            }
-            
-            .viewer-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
+        }
+
+        /* 로딩 애니메이션 */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px;
+            color: var(--text-muted);
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 스크롤바 스타일 */
+        .nav-container::-webkit-scrollbar,
+        .content-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .nav-container::-webkit-scrollbar-track,
+        .content-area::-webkit-scrollbar-track {
+            background: var(--sidebar-bg);
+        }
+
+        .nav-container::-webkit-scrollbar-thumb,
+        .content-area::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .nav-container::-webkit-scrollbar-thumb:hover,
+        .content-area::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
     </style>
 </head>
 <body>
-    <!-- 메인 홈페이지 -->
-    <div id="homepage" class="container">
-        <div class="header">
-            <h1>🖨️ BIXOLON Receipt Printer</h1>
-            <p>한국어 지원 영수증 프린터 시스템 - 완전 분석 문서</p>
+    <div class="gitbook-container">
+        <!-- 사이드바 -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-receipt"></i>
+                    Receipt Printer
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="문서 검색..." id="searchInput">
+                </div>
+            </div>
+
+            <nav class="nav-container">
+                <div class="nav-section">
+                    <div class="nav-section-title">Getting Started</div>
+                    <div class="nav-item">
+                        <a class="nav-link active" onclick="showHome()">
+                            <i class="fas fa-home"></i>
+                            홈
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" onclick="loadDocument('README.md')">
+                            <i class="fas fa-book-open"></i>
+                            프로젝트 개요
+                            <span class="badge">New</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" onclick="loadDocument('architecture-overview.md')">
+                            <i class="fas fa-sitemap"></i>
+                            아키텍처 개요
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Core Components</div>
+                    <div class="nav-item">
+                        <a class="nav-link" onclick="loadDocument('core-printer-utils-analysis.md')">
+                            <i class="fas fa-cogs"></i>
+                            Core Printer Utils
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" onclick="loadDocument('escpos-commands-deep-dive.md')">
+                            <i class="fas fa-terminal"></i>
+                            ESC/POS 명령어
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">MCP Integration</div>
+                    <div class="nav-item">
+                        <a class="nav-link" onclick="loadDocument('mcp-wrapper-analysis.md')">
+                            <i class="fas fa-link"></i>
+                            MCP Wrapper
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" onclick="loadDocument('mcp-stdio.md')">
+                            <i class="fas fa-exchange-alt"></i>
+                            MCP 통신 방식
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Development</div>
+                    <div class="nav-item">
+                        <a class="nav-link" onclick="loadDocument('backlog.md')">
+                            <i class="fas fa-tasks"></i>
+                            개발 백로그
+                        </a>
+                    </div>
+                </div>
+            </nav>
         </div>
-        
-        <div class="stats">
-            <h3>📊 프로젝트 통계</h3>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number">8</div>
-                    <div class="stat-label">분석 문서</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">336</div>
-                    <div class="stat-label">FastAPI 서버 라인</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">242</div>
-                    <div class="stat-label">핵심 유틸리티 라인</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">2:1</div>
-                    <div class="stat-label">한글:영문 폭 비율</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">7</div>
-                    <div class="stat-label">ESC/POS 명령어</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">API 엔드포인트</div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <div class="top-bar">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="breadcrumb" id="breadcrumb">
+                    <div class="breadcrumb-item">
+                        <a href="#" class="breadcrumb-home" onclick="showHome()">홈</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="docs-grid">
-            
-            <div class="doc-card overview">
-                <span class="emoji">🏗️</span>
-                <h2>영수증 프린터 시스템 아키텍처 개요</h2>
-                <div class="tags">
-                    <span class="tag">전체구조</span>
-                    <span class="tag">병렬시스템</span>
-                    <span class="tag">Mermaid</span>
+
+            <div class="content-area" id="contentArea">
+                <!-- 홈 콘텐츠 -->
+                <div id="homeContent" class="home-content">
+                    <h1 class="home-title">🖨️ BIXOLON Receipt Printer</h1>
+                    <p class="home-subtitle">
+                        한국어를 지원하는 영수증 프린터 MCP 서버 문서센터<br>
+                        Model Context Protocol을 통한 Claude Desktop 통합
+                    </p>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number">6</span>
+                            <div class="stat-label">문서 개수</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">242</span>
+                            <div class="stat-label">핵심 유틸 라인</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">7</span>
+                            <div class="stat-label">ESC/POS 명령어</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number">3</span>
+                            <div class="stat-label">MCP 도구</div>
+                        </div>
+                    </div>
+
+                    <div class="quick-start">
+                        <h3>주요 기능</h3>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> MCP 프로토콜 지원으로 Claude Desktop과 직접 통합</li>
+                            <li><i class="fas fa-check"></i> 한국어 완벽 지원 (EUC-KR 인코딩 및 ESC/POS 명령어)</li>
+                            <li><i class="fas fa-check"></i> 간단한 텍스트 출력 (200자 이내)</li>
+                            <li><i class="fas fa-check"></i> 미리보기 모드 지원</li>
+                            <li><i class="fas fa-check"></i> 직접 호출 구조 (FastAPI 서버 없이 printer_utils 직접 호출)</li>
+                        </ul>
+                    </div>
                 </div>
-                <p>이 시스템은 **BIXOLON 영수증 프린터**를 제어하는 다층 아키텍처로, 한국어 완벽 지원과 현대적인 AI 통합을 목표로 합니다. 레거시 CLI부터 Claude Desktop 통합까지 다양한 사용자 인터페이스를 제공합니다.</p>
-                <a href="architecture-overview.md" class="btn">📖 읽어보기</a>
-            </div>
-        
-            <div class="doc-card core">
-                <span class="emoji">⚙️</span>
-                <h2>Core Printer Utils 분석</h2>
-                <div class="tags">
-                    <span class="tag">한글처리</span>
-                    <span class="tag">텍스트엔진</span>
-                    <span class="tag">레이아웃</span>
+
+                <!-- 문서 콘텐츠 -->
+                <div id="docContent" class="content-wrapper" style="display: none;">
+                    <div class="doc-content">
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            문서를 불러오는 중...
+                        </div>
+                    </div>
                 </div>
-                <p>MCP 시스템의 핵심 엔진인 printer_utils.py를 심층 분석합니다. 한국어 텍스트 처리의 마스터피스와 적응형 레이아웃 시스템을 탐구합니다.</p>
-                <a href="core-printer-utils-analysis.md" class="btn">📖 읽어보기</a>
             </div>
-        
-            <div class="doc-card escpos">
-                <span class="emoji">🖨️</span>
-                <h2>ESC/POS 명령어 심층분석</h2>
-                <div class="tags">
-                    <span class="tag">프로토콜</span>
-                    <span class="tag">BIXOLON</span>
-                    <span class="tag">한글모드</span>
-                    <span class="tag">이중정렬</span>
-                </div>
-                <p>ESC/POS 프로토콜의 정교한 구현을 분석합니다. FS & → FS . 시퀀스의 비밀과 이중 정렬 문제 발견까지, 프린터 프로토콜의 모든 것을 다룹니다.</p>
-                <a href="escpos-commands-deep-dive.md" class="btn">📖 읽어보기</a>
-            </div>
-        
-            <div class="doc-card fastapi">
-                <span class="emoji">🌐</span>
-                <h2>FastAPI Server 분석</h2>
-                <div class="tags">
-                    <span class="tag">REST API</span>
-                    <span class="tag">보안</span>
-                    <span class="tag">에러처리</span>
-                    <span class="tag">MCP백엔드</span>
-                </div>
-                <p>MCP 시스템의 백엔드 심장부를 완전 해부합니다. 엔터프라이즈급 보안, 자체 진단 에러 처리, 구조화된 데이터 처리의 모든 것을 분석합니다.</p>
-                <a href="fastapi-server-analysis.md" class="btn">📖 읽어보기</a>
-            </div>
-        
-            <div class="doc-card mcp">
-                <span class="emoji">🔗</span>
-                <h2>MCP Wrapper 상세 분석</h2>
-                <div class="tags">
-                    <span class="tag">JSON-RPC</span>
-                    <span class="tag">Claude Desktop</span>
-                    <span class="tag">프로토콜</span>
-                    <span class="tag">비동기</span>
-                </div>
-                <p>`mcp_wrapper.py`는 Claude Desktop과 FastAPI 서버 간의 브리지 역할을 수행하는 핵심 컴포넌트입니다. Model Context Protocol (MCP)을 구현하여 JSON-RPC 2.0 기반의 통신을 제공합니다.</p>
-                <a href="mcp-wrapper-analysis.md" class="btn">📖 읽어보기</a>
-            </div>
-        
-            <div class="doc-card default">
-                <span class="emoji">📄</span>
-                <h2>📚 BIXOLON Receipt Printer - 문서 센터</h2>
-                <div class="tags">
-                    <span class="tag">문서</span>
-                </div>
-                <p>**추천**: 브라우저에서 아래 파일을 열어 네비게이션 가능한 문서 센터를 이용하세요!</p>
-                <a href="README.md" class="btn">📖 읽어보기</a>
-            </div>
-        
-            <div class="doc-card default">
-                <span class="emoji">📄</span>
-                <h2>개발 백로그 (Development Backlog)</h2>
-                <div class="tags">
-                    <span class="tag">문서</span>
-                </div>
-                <p>이 문서는 당장 수정할 필요는 없지만, 향후 프로젝트의 코드 품질과 유지보수성 향상을 위해 고려해볼 수 있는 개선 항목들을 기록합니다.</p>
-                <a href="backlog.md" class="btn">📖 읽어보기</a>
-            </div>
-        
-            <div class="doc-card default">
-                <span class="emoji">📄</span>
-                <h2>Receipt Printer Project Description</h2>
-                <div class="tags">
-                    <span class="tag">문서</span>
-                </div>
-                <p>이 프로젝트는 **BIXOLON SRP-330II 영수증 프린터**를 사용하여 텍스트를 출력하는 Python 기반 애플리케이션입니다. CUPS(Common Unix Printing System)를 통해 프린터와 통신하며, 한글과 영문 텍스트를 모두 지원합니다.</p>
-                <a href="description.md" class="btn">📖 읽어보기</a>
-            </div>
-        
-        </div>
-        
-        <div class="footer">
-            <p>🤖 Generated with <a href="https://claude.ai/code" style="color: #fff;">Claude Code</a></p>
-            <p>© 2024 BIXOLON Receipt Printer Documentation</p>
-            <p style="font-size: 0.8rem; margin-top: 10px;">
-                Last updated: 2024-12-30 07:39:09
-            </p>
         </div>
     </div>
-    
-    <!-- 마크다운 뷰어 -->
-    <div id="viewer" class="viewer-container">
-        <div class="viewer-header">
-            <button class="back-btn" onclick="showHomepage()">← 홈으로</button>
-            <h2 class="document-title" id="docTitle">문서 로딩중...</h2>
-        </div>
-        <div id="markdownContent" class="markdown-content">
-            로딩중...
-        </div>
-    </div>
-    
+
     <script>
+        // 전역 변수
+        let currentTheme = 'light';
+        let currentDoc = null;
+
         // Mermaid 초기화
         mermaid.initialize({
-            startOnLoad: false,  // 수동으로 제어
+            startOnLoad: true,
             theme: 'default',
-            securityLevel: 'loose',
-            fontFamily: 'arial'
+            themeVariables: {
+                primaryColor: '#3b82f6',
+                primaryTextColor: '#1f2937',
+                primaryBorderColor: '#3b82f6',
+                lineColor: '#6b7280',
+                secondaryColor: '#f8fafc',
+                tertiaryColor: '#ffffff'
+            }
         });
-        
-        // 마크다운 렌더링 설정 (단순화)
-        marked.setOptions({
-            breaks: true,
-            gfm: true
-        });
-        
-        // 페이지 상태 관리
-        function showHomepage() {
-            document.getElementById('homepage').style.display = 'block';
-            document.getElementById('viewer').style.display = 'none';
-            window.history.pushState({page: 'home'}, '', '#');
-        }
-        
-        function showViewer() {
-            document.getElementById('homepage').style.display = 'none';
-            document.getElementById('viewer').style.display = 'block';
-        }
-        
-        // 마크다운 파일 로드 및 렌더링
-        async function loadMarkdown(filename) {
-            const titleMap = {
-                "architecture-overview.md": "영수증 프린터 시스템 아키텍처 개요",
-                "core-printer-utils-analysis.md": "Core Printer Utils 분석",
-                "escpos-commands-deep-dive.md": "ESC/POS 명령어 심층분석",
-                "fastapi-server-analysis.md": "FastAPI Server 분석",
-                "mcp-wrapper-analysis.md": "MCP Wrapper 상세 분석",
-                "README.md": "📚 BIXOLON Receipt Printer - 문서 센터",
-                "backlog.md": "개발 백로그 (Development Backlog)",
-                "description.md": "Receipt Printer Project Description"
-            };
+
+        // 테마 토글
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
             
+            const icon = document.querySelector('#themeToggle i');
+            icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        // 사이드바 토글 (모바일)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // 홈 표시
+        function showHome() {
+            document.getElementById('homeContent').style.display = 'block';
+            document.getElementById('docContent').style.display = 'none';
+            
+            // 네비게이션 활성화 상태 변경
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector('.nav-link[onclick="showHome()"]').classList.add('active');
+            
+            // 브레드크럼 업데이트
+            updateBreadcrumb('홈');
+            
+            currentDoc = null;
+            history.pushState({page: 'home'}, '', '#');
+        }
+
+        // 문서 로드
+        async function loadDocument(filename) {
             try {
-                showViewer();
-                document.getElementById('docTitle').textContent = titleMap[filename] || filename;
-                document.getElementById('markdownContent').innerHTML = '📄 문서를 로딩중입니다...';
+                // UI 업데이트
+                document.getElementById('homeContent').style.display = 'none';
+                document.getElementById('docContent').style.display = 'block';
                 
+                const contentDiv = document.querySelector('#docContent .doc-content');
+                contentDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i>문서를 불러오는 중...</div>';
+                
+                // 네비게이션 활성화 상태 변경
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector(`[onclick="loadDocument('${filename}')"]`).classList.add('active');
+                
+                // 마크다운 파일 로드
                 const response = await fetch(filename);
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error(`파일을 찾을 수 없습니다: ${filename}`);
                 }
                 
-                const markdownText = await response.text();
-                console.log('Markdown loaded:', markdownText.substring(0, 200) + '...');
+                const markdown = await response.text();
+                const html = marked.parse(markdown);
                 
-                const htmlContent = marked.parse(markdownText);
-                console.log('HTML generated:', typeof htmlContent, htmlContent.substring(0, 200) + '...');
+                // 콘텐츠 렌더링
+                contentDiv.innerHTML = html;
                 
-                // 내용 렌더링
-                if (typeof htmlContent === 'string') {
-                    document.getElementById('markdownContent').innerHTML = htmlContent;
-                } else {
-                    console.error('HTML content is not a string:', htmlContent);
-                    document.getElementById('markdownContent').innerHTML = '<p>오류: 마크다운 파싱 실패</p>';
-                    return;
-                }
-                
-                // 코드 하이라이팅 적용
+                // 코드 하이라이팅
                 Prism.highlightAll();
                 
-                // Mermaid 다이어그램 변환 및 렌더링
-                setTimeout(async () => {
-                    // mermaid 코드 블록을 찾아서 div로 변환
-                    const mermaidCodeBlocks = document.querySelectorAll('#markdownContent code.language-mermaid');
-                    console.log('Found mermaid code blocks:', mermaidCodeBlocks.length);
+                // Mermaid 다이어그램 렌더링
+                const mermaidElements = document.querySelectorAll('.language-mermaid, code.language-mermaid');
+                mermaidElements.forEach((element, index) => {
+                    const code = element.textContent;
+                    const graphDiv = document.createElement('div');
+                    graphDiv.className = 'mermaid';
+                    graphDiv.textContent = code;
                     
-                    mermaidCodeBlocks.forEach((codeBlock, index) => {
-                        try {
-                            const mermaidCode = codeBlock.textContent;
-                            console.log(`Mermaid code ${index}:`, mermaidCode.substring(0, 100) + '...');
-                            
-                            // 새 div 요소 생성
-                            const mermaidDiv = document.createElement('div');
-                            mermaidDiv.className = 'mermaid';
-                            mermaidDiv.textContent = mermaidCode;
-                            
-                            // 기존 pre 요소를 div로 교체
-                            const preElement = codeBlock.closest('pre');
-                            if (preElement) {
-                                preElement.parentNode.replaceChild(mermaidDiv, preElement);
-                            }
-                        } catch (error) {
-                            console.error('Error converting mermaid code block:', error);
-                        }
-                    });
-                    
-                    // mermaid 렌더링 실행
-                    const mermaidElements = document.querySelectorAll('#markdownContent .mermaid');
-                    console.log('Mermaid elements to render:', mermaidElements.length);
-                    
-                    if (mermaidElements.length > 0) {
-                        try {
-                            await mermaid.run({
-                                nodes: mermaidElements
-                            });
-                            console.log('Mermaid rendering completed');
-                        } catch (error) {
-                            console.error('Mermaid rendering error:', error);
-                        }
+                    if (element.tagName === 'CODE') {
+                        element.parentElement.replaceWith(graphDiv);
+                    } else {
+                        element.replaceWith(graphDiv);
                     }
-                }, 200);
+                });
                 
-                // URL 업데이트
-                window.history.pushState({page: 'doc', file: filename}, '', `#${filename}`);
+                // Mermaid 다시 초기화
+                mermaid.init();
                 
-                // 맨 위로 스크롤
-                window.scrollTo(0, 0);
+                // 브레드크럼 업데이트
+                const title = getDocumentTitle(filename);
+                updateBreadcrumb(title);
+                
+                // 스크롤 위치 리셋
+                document.getElementById('contentArea').scrollTop = 0;
+                
+                currentDoc = filename;
+                history.pushState({page: 'document', file: filename}, '', `#${filename}`);
+                
+                // 모바일에서 사이드바 닫기
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
                 
             } catch (error) {
-                document.getElementById('markdownContent').innerHTML = 
-                    `<div style="color: #dc3545; padding: 20px; text-align: center;">
-                        <h3>❌ 문서 로드 실패</h3>
-                        <p><strong>오류:</strong> ${error.message}</p>
-                        <p>파일 경로를 확인하거나 네트워크 상태를 점검해주세요.</p>
-                        <button class="btn" onclick="showHomepage()" style="margin-top: 15px;">홈으로 돌아가기</button>
-                    </div>`;
+                const contentDiv = document.querySelector('#docContent .doc-content');
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                        <h2>문서를 불러올 수 없습니다</h2>
+                        <p style="color: var(--text-muted); margin: 16px 0;">${error.message}</p>
+                        <button onclick="showHome()" style="padding: 10px 20px; background: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer;">홈으로 돌아가기</button>
+                    </div>
+                `;
             }
         }
-        
-        // 링크 클릭 이벤트 처리
-        document.addEventListener('DOMContentLoaded', function() {
-            // 문서 카드의 링크들을 가로채서 마크다운 로더로 연결
-            document.querySelectorAll('a[href$=".md"]').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const filename = this.getAttribute('href');
-                    loadMarkdown(filename);
-                });
-            });
-            
-            // 브라우저 뒤로가기/앞으로가기 처리
-            window.addEventListener('popstate', function(e) {
-                if (e.state && e.state.page === 'doc') {
-                    loadMarkdown(e.state.file);
+
+        // 문서 제목 추출
+        function getDocumentTitle(filename) {
+            const titles = {
+                'README.md': '프로젝트 개요',
+                'architecture-overview.md': '아키텍처 개요',
+                'core-printer-utils-analysis.md': 'Core Printer Utils',
+                'escpos-commands-deep-dive.md': 'ESC/POS 명령어',
+                'mcp-wrapper-analysis.md': 'MCP Wrapper',
+                'mcp-stdio.md': 'MCP 통신 방식',
+                'backlog.md': '개발 백로그'
+            };
+            return titles[filename] || filename.replace('.md', '');
+        }
+
+        // 브레드크럼 업데이트
+        function updateBreadcrumb(title) {
+            const breadcrumb = document.getElementById('breadcrumb');
+            if (title === '홈') {
+                breadcrumb.innerHTML = `
+                    <div class="breadcrumb-item">
+                        <a href="#" class="breadcrumb-home" onclick="showHome()">홈</a>
+                    </div>
+                `;
+            } else {
+                breadcrumb.innerHTML = `
+                    <div class="breadcrumb-item">
+                        <a href="#" class="breadcrumb-home" onclick="showHome()">홈</a>
+                    </div>
+                    <div class="breadcrumb-item">${title}</div>
+                `;
+            }
+        }
+
+        // 검색 기능
+        function filterNavigation(query) {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                const item = link.closest('.nav-item');
+                if (text.includes(query.toLowerCase()) || query === '') {
+                    item.style.display = 'block';
                 } else {
-                    showHomepage();
+                    item.style.display = 'none';
                 }
             });
-            
-            // URL 해시에 따른 초기 페이지 표시
-            const hash = window.location.hash.substring(1);
-            if (hash && hash.endsWith('.md')) {
-                loadMarkdown(hash);
+        }
+
+        // 브라우저 뒤로가기/앞으로가기 처리
+        window.addEventListener('popstate', (event) => {
+            if (!event.state || event.state.page === 'home') {
+                showHome();
+            } else if (event.state.page === 'document') {
+                loadDocument(event.state.file);
             }
         });
-        
-        // 카드 호버 효과 개선
-        document.querySelectorAll('.doc-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.02)';
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            // 저장된 테마 로드
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            currentTheme = savedTheme;
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            const themeIcon = document.querySelector('#themeToggle i');
+            themeIcon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            
+            // 이벤트 리스너
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                filterNavigation(e.target.value);
             });
             
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
+            // URL 해시 확인
+            const hash = window.location.hash.slice(1);
+            if (hash && hash.endsWith('.md')) {
+                loadDocument(hash);
+            } else {
+                showHome();
+            }
+            
+            // 모바일에서 콘텐츠 클릭 시 사이드바 닫기
+            document.getElementById('contentArea').addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('open');
+                }
             });
-        });
-        
-        // 통계 카운터 애니메이션
-        function animateNumbers() {
-            const statNumbers = document.querySelectorAll('.stat-number');
-            statNumbers.forEach(stat => {
-                const target = parseInt(stat.textContent);
-                if (isNaN(target)) return;
-                
-                let current = 0;
-                const increment = target / 50;
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        current = target;
-                        clearInterval(timer);
-                    }
-                    stat.textContent = Math.floor(current);
-                }, 30);
-            });
-        }
-        
-        // 페이지 로드 시 애니메이션 실행
-        window.addEventListener('load', () => {
-            setTimeout(animateNumbers, 500);
         });
     </script>
 </body>
