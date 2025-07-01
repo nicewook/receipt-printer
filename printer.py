@@ -74,6 +74,12 @@ def prepare_print_content(text, min_lines=6):
     
     return lines
 
+def printer_preview(text):
+    """텍스트 출력 미리보기 생성"""
+    lines = prepare_print_content(text)
+    preview_text = "\n".join(f"|{line:<40}|" for line in lines)
+    return f"{'=' * 42}\n{preview_text}\n{'=' * 42}\n총 {len(lines)}줄"
+
 def create_esc_pos_content(lines):
     """ESC/POS 명령어가 포함된 출력 내용 생성"""
     content = []
@@ -109,7 +115,7 @@ def create_esc_pos_content(lines):
     
     return b''.join(content)
 
-def get_available_printers():
+def printer_list():
     """사용 가능한 프린터 목록 가져오기"""
     try:
         result = subprocess.run(['lpstat', '-p'], capture_output=True, text=True)
@@ -124,7 +130,7 @@ def get_available_printers():
     except Exception:
         return []
 
-def print_to_cups(text, printer_name="BIXOLON_SRP_330II"):
+def printer_print(text, printer_name="BIXOLON_SRP_330II"):
     """CUPS를 통해 프린터로 출력"""
     try:
         # 출력할 내용 준비
@@ -159,7 +165,7 @@ def print_to_cups(text, printer_name="BIXOLON_SRP_330II"):
         print(f"❌ 출력 오류: {e}")
         return False
 
-def check_printer_status(printer_name):
+def printer_status(printer_name):
     """프린터 상태 확인"""
     try:
         result = subprocess.run(['lpstat', '-p', printer_name], capture_output=True, text=True)
@@ -182,11 +188,11 @@ def main():
     
     # 프린터 목록 표시
     if args.list_printers:
-        printers = get_available_printers()
+        printers = printer_list()
         if printers:
             print("🖨️  사용 가능한 프린터:")
             for printer in printers:
-                status = check_printer_status(printer)
+                status = printer_status(printer)
                 print(f"  - {printer}")
                 print(f"    {status}")
         else:
@@ -196,7 +202,7 @@ def main():
     
     # 프린터 상태 확인
     if args.status:
-        status = check_printer_status(args.printer)
+        status = printer_status(args.printer)
         print(f"📊 프린터 상태: {args.printer}")
         print(status)
         return
@@ -219,7 +225,7 @@ def main():
         return
     
     # 실제 출력
-    success = print_to_cups(args.text, args.printer)
+    success = printer_print(args.text, args.printer)
     
     if not success:
         print("\n🔧 문제 해결 방법:")

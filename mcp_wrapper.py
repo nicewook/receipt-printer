@@ -144,12 +144,11 @@ class MCPServer:
         if preview:
             # 미리보기 생성
             try:
-                lines = await self._run_sync(printer.prepare_print_content, text)
-                preview_text = "\n".join(f"|{line:<40}|" for line in lines)
+                preview_text = await self._run_sync(printer.printer_preview, text)
                 return {
                     "content": [{
                         "type": "text",
-                        "text": f"📄 출력 미리보기 ({len(text)}자):\n{'=' * 42}\n{preview_text}\n{'=' * 42}\n총 {len(lines)}줄"
+                        "text": f"📄 출력 미리보기 ({len(text)}자):\n{preview_text}"
                     }]
                 }
             except Exception as e:
@@ -163,7 +162,7 @@ class MCPServer:
         else:
             # 실제 출력
             try:
-                success = await self._run_sync(printer.print_to_cups, text, printer_name)
+                success = await self._run_sync(printer.printer_print, text, printer_name)
                 if success:
                     return {
                         "content": [{
@@ -191,7 +190,7 @@ class MCPServer:
     async def _handle_list_printers(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """프린터 목록 조회 처리 (직접 호출)"""
         try:
-            printers = await self._run_sync(printer.get_available_printers)
+            printers = await self._run_sync(printer.printer_list)
             
             if not printers:
                 return {
@@ -204,7 +203,7 @@ class MCPServer:
             printer_list = ["🖨️  사용 가능한 프린터:"]
             for printer in printers:
                 try:
-                    status = await self._run_sync(printer.check_printer_status, printer)
+                    status = await self._run_sync(printer.printer_status, printer)
                     printer_list.append(f"  ✅ {printer}")
                     printer_list.append(f"     상태: {status}")
                 except Exception as e:
@@ -232,7 +231,7 @@ class MCPServer:
         printer_name = arguments.get("printer_name", "BIXOLON_SRP_330II")
         
         try:
-            status = await self._run_sync(printer.check_printer_status, printer_name)
+            status = await self._run_sync(printer.printer_status, printer_name)
             
             # 상태 메시지에서 'idle'나 'processing' 같은 키워드로 가용성 판단
             is_available = "idle" in status.lower() or "accepting" in status.lower()
