@@ -157,3 +157,7 @@ brew services list | grep cups  # macOS
 - **Mixed Language**: Korean for user-facing messages, English for technical terms
 - **Print Statements**: Used for user feedback (no logging framework)
 - **Exception Handling**: Broad try/catch blocks with user-friendly error messages
+
+## Documentation Standards
+
+For markdown files in the `/docs` directory, refer to `docs/CLAUDE.md` for specific formatting and header requirements. This ensures consistency with Cursor IDE rules and proper integration with the documentation portal.

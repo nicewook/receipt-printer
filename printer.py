@@ -110,6 +110,7 @@ def create_esc_pos_content(lines):
     
     # 용지 절단
   
+    content.append(b'\n\n\n')  # GS V 0 (풀 컷)
     content.append(b'\x1D\x56\x00')  # GS V 0 (풀 컷)
     # content.append(b'\x1D\x56\x42\x10')  # 피드 추가 후 풀 컷
     

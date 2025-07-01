@@ -245,6 +245,32 @@
             padding: 0;
         }
 
+        .content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .content th, .content td {
+            padding: 8px 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        .content th {
+            background-color: var(--toc-bg);
+            font-weight: 600;
+        }
+
+        .content blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 1em 0;
+            padding: 0 1em;
+            color: var(--text-color);
+            background-color: var(--toc-bg);
+        }
+
         /* 오른쪽 TOC */
         .toc-container {
             width: 200px;
@@ -496,339 +522,41 @@
         // 문서 로드
         function loadDocuments() {
             documents = {
-                'README.md': {
-                    title: 'BIXOLON Receipt Printer MCP Server',
-                    content: `# BIXOLON Receipt Printer MCP Server
-
-한국어를 지원하는 BIXOLON 영수증 프린터 제어를 위한 **단순화된** MCP (Model Context Protocol) 서버입니다.
-
-## 🚀 주요 기능
-
-- **MCP 프로토콜 지원**: Claude Desktop과 직접 통합 (HTTP 서버 불필요)
-- **한국어 완벽 지원**: EUC-KR 인코딩 및 ESC/POS 명령어
-- **간단한 텍스트 출력**: 200자 이내의 메모, 할일 목록 즉시 출력
-- **미리보기 모드**: 실제 출력 전 내용 확인 가능
-- **직접 호출 구조**: FastAPI 서버 없이 printer 직접 호출
-
-## 📋 시스템 요구사항
-
-- **Python**: 3.8 이상
-- **운영체제**: macOS 또는 Linux (CUPS 지원)
-- **프린터**: ESC/POS 호환 영수증 프린터 (BIXOLON SRP-330II 시리즈 권장)
-- **CUPS**: 프린터 서비스가 설치되고 실행 중이어야 함
-- **텍스트 제한**: 200자 이내 (한글/영문 혼용 가능)
-
-## 🛠️ 설치 및 설정
-
-### 1. 의존성 설치
-
-\`\`\`bash
-pip install -r requirements.txt
-\`\`\`
-
-### 2. CUPS 프린터 설정
-
-\`\`\`bash
-# 프린터 목록 확인
-lpstat -p
-
-# CUPS 서비스 상태 확인 (macOS)
-brew services list | grep cups
-
-# CUPS 서비스 시작 (필요시)
-brew services start cups
-\`\`\`
-
-## 🔧 Claude Desktop 설정
-
-### 1. 설정 파일 위치
-- **macOS**: \`~/Library/Application Support/Claude/claude_desktop_config.json\`
-- **Windows**: \`%APPDATA%/Claude/claude_desktop_config.json\`
-- **Linux**: \`~/.config/Claude/claude_desktop_config.json\`
-
-### 2. Python 환경 확인
-
-먼저 사용할 Python 환경을 확인하세요:
-
-\`\`\`bash
-# 현재 Python 경로 확인
-which python3
-
-# 가상환경 사용 시
-source /path/to/venv/bin/activate
-which python3  # 가상환경의 python 경로 확인
-\`\`\`
-
-### 3. 설정 파일 내용
-
-#### 기본 설정 (시스템 Python)
-\`\`\`json
-{
-  "mcpServers": {
-    "receipt-printer": {
-      "command": "python3",
-      "args": ["/절대경로/receipt-printer/mcp_wrapper.py"]
-    }
-  }
-}
-\`\`\`
-
-#### 권장 설정 (전체 경로 지정)
-\`\`\`json
-{
-  "mcpServers": {
-    "receipt-printer": {
-      "command": "/usr/bin/python3",
-      "args": ["/Users/username/receipt-printer/mcp_wrapper.py"]
-    }
-  }
-}
-\`\`\`
-
-#### 가상환경 사용 시
-\`\`\`json
-{
-  "mcpServers": {
-    "receipt-printer": {
-      "command": "/Users/username/receipt-printer/.venv/bin/python3",
-      "args": ["/Users/username/receipt-printer/mcp_wrapper.py"]
-    }
-  }
-}
-\`\`\`
-
-**중요**: 
-- 절대경로를 정확히 입력해야 합니다!
-- 가상환경 사용 시 가상환경의 python 경로를 지정하세요!
-
-### 4. 설정 검증
-
-설정이 올바른지 터미널에서 확인:
-
-\`\`\`bash
-# 설정한 Python으로 MCP wrapper가 실행되는지 테스트
-/usr/bin/python3 /Users/username/receipt-printer/mcp_wrapper.py
-# 또는 가상환경 사용 시
-/Users/username/receipt-printer/.venv/bin/python3 /Users/username/receipt-printer/mcp_wrapper.py
-
-# Ctrl+C로 종료 후 다음 단계 진행
-\`\`\`
-
-### 5. 설정 완료 후
-
-1. **Claude Desktop 완전 재시작** (중요!)
-2. 새 대화 시작
-3. MCP 도구가 자동으로 연결됨
-
-## 🚀 사용 방법
-
-### 1. Claude Desktop에서 간단한 텍스트 출력
-
-#### ">" 트리거 패턴 (추천)
-\`\`\`
-> 우유 사오기
-> 회의 준비사항: 프레젠테이션 자료 준비
-> 오늘 할일: 운동, 장보기, 청소
-\`\`\`
-
-#### 직접 요청
-\`\`\`
-"테스트 메모"를 영수증으로 출력해줘
-영수증에 "점심약속 1시"라고 출력해줘
-\`\`\`
-
-### 2. 프린터 관리
-
-#### 프린터 목록 조회
-\`\`\`
-프린터 목록을 보여줘
-사용 가능한 프린터가 뭐가 있어?
-\`\`\`
-
-#### 프린터 상태 확인
-\`\`\`
-프린터 상태 확인해줘
-BIXOLON 프린터 상태는 어때?
-\`\`\`
-
-### 3. 미리보기 기능
-\`\`\`
-"장보기 목록"을 미리보기로 보여줘
-다음 내용을 출력 전에 미리보기 해줘: "회의 안건"
-\`\`\`
-
-## 📖 MCP 도구 상세
-
-### print_receipt
-- **기능**: 200자 이내의 간단한 텍스트를 영수증으로 출력
-- **매개변수**:
-  - \`text\` (필수): 출력할 텍스트 (200자 이내)
-  - \`printer_name\` (선택): 프린터 이름 (기본값: BIXOLON_SRP_330II)
-  - \`preview\` (선택): 미리보기 모드 (기본값: false)
-
-### list_printers
-- **기능**: 사용 가능한 프린터 목록과 상태 조회
-- **매개변수**: 없음
-
-### get_printer_status
-- **기능**: 특정 프린터의 상태 확인
-- **매개변수**:
-  - \`printer_name\` (선택): 프린터 이름 (기본값: BIXOLON_SRP_330II)
-
-## 🧪 테스트 실행
-
-### MCP 서버 직접 테스트
-
-\`\`\`bash
-# MCP 서버 시작 테스트
-python3 mcp_wrapper.py
-
-# 도구 목록 조회
-echo '{"method":"tools/list","id":1}' | python3 mcp_wrapper.py
-
-# 텍스트 출력 테스트 (미리보기)
-echo '{"method":"tools/call","id":2,"params":{"name":"print_receipt","arguments":{"text":"테스트","preview":true}}}' | python3 mcp_wrapper.py
-
-# 프린터 목록 조회
-echo '{"method":"tools/call","id":3,"params":{"name":"list_printers","arguments":{}}}' | python3 mcp_wrapper.py
-\`\`\`
-
-### 단위 테스트
-
-\`\`\`bash
-# 모든 테스트 실행
-pytest
-
-# 특정 테스트 파일 실행
-pytest tests/test_printer.py -v
-
-# 커버리지 포함 실행
-pytest --cov=. --cov-report=html
-\`\`\`
-
-## 🛠️ 개발 가이드
-
-### 단순화된 프로젝트 구조
-
-\`\`\`
-receipt-printer/
-├── printer.py     # 핵심 프린터 기능
-├── mcp_wrapper.py       # MCP 프로토콜 인터페이스
-├── requirements.txt     # 최소 의존성 목록
-├── CLAUDE.md           # AI 개발 가이드
-├── claude_desktop_config.json  # 설정 예시
-└── tests/              # 테스트 스위트
-    ├── test_printer.py
-    └── test_mcp_integration.py
-\`\`\`
-
-### 아키텍처
-
-\`\`\`
-Claude Desktop → JSON-RPC → mcp_wrapper.py → printer.py → CUPS → 프린터
-\`\`\`
-
-- **단순함**: HTTP 서버 없이 직접 함수 호출
-- **빠름**: 네트워크 오버헤드 제거
-- **안정함**: 의존성 최소화
-
-## 🐛 문제 해결
-
-### 일반적인 문제
-
-1. **프린터가 인식되지 않음**
-   \`\`\`bash
-   lpstat -p  # 프린터 목록 확인
-   \`\`\`
-
-2. **CUPS 서비스 오류**
-   \`\`\`bash
-   brew services restart cups  # macOS
-   sudo service cups restart   # Linux
-   \`\`\`
-
-3. **Claude Desktop에 MCP 서버가 나타나지 않음**
-   - 설정 파일 경로 확인
-   - 절대경로 정확히 입력했는지 확인
-   - Claude Desktop 완전 재시작
-   - 새 대화 시작
-
-4. **텍스트가 너무 김**
-   - 200자 이내로 제한
-   - 여러 번에 나누어 출력
-
-5. **한글 출력 문제**
-   - 프린터가 EUC-KR 인코딩을 지원하는지 확인
-   - ESC/POS 호환성 확인
-
-### 디버그 모드
-
-\`\`\`bash
-# MCP 서버 로그 확인 (stderr)
-python3 mcp_wrapper.py 2> debug.log
-
-# 실시간 로그 모니터링
-python3 mcp_wrapper.py 2>&1 | tee debug.log
-\`\`\`
-
-## 📚 추가 문서
-
-- **상세 문서**: \`docs/\` 디렉토리 참조
-- **MCP 통신 방식**: \`docs/mcp-stdio.md\`
-- **단순화 계획**: \`docs/mcp-simplification-plan.md\`
-- **개발자 가이드**: \`CLAUDE.md\`
-
-## 💡 사용 팁
-
-1. **빠른 메모**: \`> 텍스트\` 형식으로 즉시 출력
-2. **긴 텍스트**: 200자를 넘으면 자동으로 오류 메시지 표시
-3. **미리보기**: 실제 출력 전 내용 확인 가능
-4. **여러 프린터**: 프린터 이름 지정으로 다른 프린터 사용 가능
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
-
-## 🤝 기여하기
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
-
-## 📞 지원
-
-문제가 발생하거나 질문이 있으시면 GitHub Issues를 통해 문의해주세요.`
+                "README.md": {
+                    "title": "BIXOLON Receipt Printer MCP Server",
+                    "content": "# BIXOLON Receipt Printer MCP Server\\n\\n한국어를 지원하는 BIXOLON 영수증 프린터 제어를 위한 **단순화된** MCP (Model Context Protocol) 서버입니다.\\n\\n## 🚀 주요 기능\\n\\n- **MCP 프로토콜 지원**: Claude Desktop과 직접 통합 (HTTP 서버 불필요)\\n- **한국어 완벽 지원**: EUC-KR 인코딩 및 ESC/POS 명령어\\n- **간단한 텍스트 출력**: 200자 이내의 메모, 할일 목록 즉시 출력\\n- **미리보기 모드**: 실제 출력 전 내용 확인 가능\\n- **직접 호출 구조**: FastAPI 서버 없이 printer 직접 호출\\n\\n## 📋 시스템 요구사항\\n\\n- **Python**: 3.8 이상\\n- **운영체제**: macOS 또는 Linux (CUPS 지원)\\n- **프린터**: ESC/POS 호환 영수증 프린터 (BIXOLON SRP-330II 시리즈 권장)\\n- **CUPS**: 프린터 서비스가 설치되고 실행 중이어야 함\\n- **텍스트 제한**: 200자 이내 (한글/영문 혼용 가능)\\n\\n## 🛠️ 설치 및 설정\\n\\n### 1. 의존성 설치\\n\\n```bash\\npip install -r requirements.txt\\n```\\n\\n### 2. CUPS 프린터 설정\\n\\n```bash\\n# 프린터 목록 확인\\nlpstat -p\\n\\n# CUPS 서비스 상태 확인 (macOS)\\nbrew services list | grep cups\\n\\n# CUPS 서비스 시작 (필요시)\\nbrew services start cups\\n```\\n\\n## 🔧 Claude Desktop 설정\\n\\n### 1. 설정 파일 위치\\n- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`\\n- **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`\\n- **Linux**: `~/.config/Claude/claude_desktop_config.json`\\n\\n### 2. Python 환경 확인\\n\\n먼저 사용할 Python 환경을 확인하세요:\\n\\n```bash\\n# 현재 Python 경로 확인\\nwhich python3\\n\\n# 가상환경 사용 시\\nsource /path/to/venv/bin/activate\\nwhich python3  # 가상환경의 python 경로 확인\\n```\\n\\n### 3. 설정 파일 내용\\n\\n#### 기본 설정 (시스템 Python)\\n```json\\n{\\n  \\\"mcpServers\\\": {\\n    \\\"receipt-printer\\\": {\\n      \\\"command\\\": \\\"python3\\\",\\n      \\\"args\\\": [\\\"/절대경로/receipt-printer/mcp_wrapper.py\\\"]\\n    }\\n  }\\n}\\n```\\n\\n#### 권장 설정 (전체 경로 지정)\\n```json\\n{\\n  \\\"mcpServers\\\": {\\n    \\\"receipt-printer\\\": {\\n      \\\"command\\\": \\\"/usr/bin/python3\\\",\\n      \\\"args\\\": [\\\"/Users/username/receipt-printer/mcp_wrapper.py\\\"]\\n    }\\n  }\\n}\\n```\\n\\n#### 가상환경 사용 시\\n```json\\n{\\n  \\\"mcpServers\\\": {\\n    \\\"receipt-printer\\\": {\\n      \\\"command\\\": \\\"/Users/username/receipt-printer/.venv/bin/python3\\\",\\n      \\\"args\\\": [\\\"/Users/username/receipt-printer/mcp_wrapper.py\\\"]\\n    }\\n  }\\n}\\n```\\n\\n**중요**: \\n- 절대경로를 정확히 입력해야 합니다!\\n- 가상환경 사용 시 가상환경의 python 경로를 지정하세요!\\n\\n### 4. 설정 검증\\n\\n설정이 올바른지 터미널에서 확인:\\n\\n```bash\\n# 설정한 Python으로 MCP wrapper가 실행되는지 테스트\\n/usr/bin/python3 /Users/username/receipt-printer/mcp_wrapper.py\\n# 또는 가상환경 사용 시\\n/Users/username/receipt-printer/.venv/bin/python3 /Users/username/receipt-printer/mcp_wrapper.py\\n\\n# Ctrl+C로 종료 후 다음 단계 진행\\n```\\n\\n### 5. 설정 완료 후\\n\\n1. **Claude Desktop 완전 재시작** (중요!)\\n2. 새 대화 시작\\n3. MCP 도구가 자동으로 연결됨\\n\\n## 🚀 사용 방법\\n\\n### 1. Claude Desktop에서 간단한 텍스트 출력\\n\\n#### \\\">\\\"; 트리거 패턴 (추천)\\n```\\n> 우유 사오기\\n> 회의 준비사항: 프레젠테이션 자료 준비\\n> 오늘 할일: 운동, 장보기, 청소\\n```\\n\\n#### 직접 요청\\n```\\n\\\"테스트 메모\\\"를 영수증으로 출력해줘\\n영수증에 \\\"점심약속 1시\\\"라고 출력해줘\\n```\\n\\n### 2. 프린터 관리\\n\\n#### 프린터 목록 조회\\n```\\n프린터 목록을 보여줘\\n사용 가능한 프린터가 뭐가 있어?\\n```\\n\\n#### 프린터 상태 확인\\n```\\n프린터 상태 확인해줘\\nBIXOLON 프린터 상태는 어때?\\n```\\n\\n### 3. 미리보기 기능\\n```\\n\\\"장보기 목록\\\"을 미리보기로 보여줘\\n다음 내용을 출력 전에 미리보기 해줘: \\\"회의 안건\\\"\\n```\\n\\n## 📖 MCP 도구 상세\\n\\n### print_receipt\\n- **기능**: 200자 이내의 간단한 텍스트를 영수증으로 출력\\n- **매개변수**:\\n  - `text` (필수): 출력할 텍스트 (200자 이내)\\n  - `printer_name` (선택): 프린터 이름 (기본값: BIXOLON_SRP_330II)\\n  - `preview` (선택): 미리보기 모드 (기본값: false)\\n\\n### list_printers\\n- **기능**: 사용 가능한 프린터 목록과 상태 조회\\n- **매개변수**: 없음\\n\\n### get_printer_status\\n- **기능**: 특정 프린터의 상태 확인\\n- **매개변수**:\\n  - `printer_name` (선택): 프린터 이름 (기본값: BIXOLON_SRP_330II)\\n\\n## 🧪 테스트 실행\\n\\n### MCP 서버 직접 테스트\\n\\n```bash\\n# MCP 서버 시작 테스트\\npython3 mcp_wrapper.py\\n\\n# 도구 목록 조회\\necho '{\\\"method\\\":\\\"tools/list\\\",\\\"id\\\":1}' | python3 mcp_wrapper.py\\n\\n# 텍스트 출력 테스트 (미리보기)\\necho '{\\\"method\\\":\\\"tools/call\\\",\\\"id\\\":2,\\\"params\\\":{\\\"name\\\":\\\"print_receipt\\\",\\\"arguments\\\":{\\\"text\\\":\\\"테스트\\\",\\\"preview\\\":true}}}' | python3 mcp_wrapper.py\\n\\n# 프린터 목록 조회\\necho '{\\\"method\\\":\\\"tools/call\\\",\\\"id\\\":3,\\\"params\\\":{\\\"name\\\":\\\"list_printers\\\",\\\"arguments\\\":{}}}' | python3 mcp_wrapper.py\\n```\\n\\n### 단위 테스트\\n\\n```bash\\n# 모든 테스트 실행\\npytest\\n\\n# 특정 테스트 파일 실행\\npytest tests/test_printer.py -v\\n\\n# 커버리지 포함 실행\\npytest --cov=. --cov-report=html\\n```\\n\\n## 🛠️ 개발 가이드\\n\\n### 단순화된 프로젝트 구조\\n\\n```\\nreceipt-printer/\\n├── printer.py     # 핵심 프린터 기능\\n├── mcp_wrapper.py       # MCP 프로토콜 인터페이스\\n├── requirements.txt     # 최소 의존성 목록\\n├── CLAUDE.md           # AI 개발 가이드\\n├── claude_desktop_config.json  # 설정 예시\\n└── tests/              # 테스트 스위트\\n    ├── test_printer.py\\n    └── test_mcp_integration.py\\n```\\n\\n### 아키텍처\\n\\n```\\nClaude Desktop → JSON-RPC → mcp_wrapper.py → printer.py → CUPS → 프린터\\n```\\n\\n- **단순함**: HTTP 서버 없이 직접 함수 호출\\n- **빠름**: 네트워크 오버헤드 제거\\n- **안정함**: 의존성 최소화\\n\\n## 🐛 문제 해결\\n\\n### 일반적인 문제\\n\\n1. **프린터가 인식되지 않음**\\n   ```bash\\n   lpstat -p  # 프린터 목록 확인\\n   ```\\n\\n2. **CUPS 서비스 오류**\\n   ```bash\\n   brew services restart cups  # macOS\\n   sudo service cups restart   # Linux\\n   ```\\n\\n3. **Claude Desktop에 MCP 서버가 나타나지 않음**\\n   - 설정 파일 경로 확인\\n   - 절대경로 정확히 입력했는지 확인\\n   - Claude Desktop 완전 재시작\\n   - 새 대화 시작\\n\\n4. **텍스트가 너무 김**\\n   - 200자 이내로 제한\\n   - 여러 번에 나누어 출력\\n\\n5. **한글 출력 문제**\\n   - 프린터가 EUC-KR 인코딩을 지원하는지 확인\\n   - ESC/POS 호환성 확인\\n\\n### 디버그 모드\\n\\n```bash\\n# MCP 서버 로그 확인 (stderr)\\npython3 mcp_wrapper.py 2> debug.log\\n\\n# 실시간 로그 모니터링\\npython3 mcp_wrapper.py 2>&1 | tee debug.log\\n```\\n\\n## 📚 추가 문서\\n\\n- **상세 문서**: `docs/` 디렉토리 참조\\n- **MCP 통신 방식**: `docs/mcp-stdio.md`\\n- **단순화 계획**: `docs/mcp-simplification-plan.md`\\n- **개발자 가이드**: `CLAUDE.md`\\n\\n## 💡 사용 팁\\n\\n1. **빠른 메모**: `> 텍스트` 형식으로 즉시 출력\\n2. **긴 텍스트**: 200자를 넘으면 자동으로 오류 메시지 표시\\n3. **미리보기**: 실제 출력 전 내용 확인 가능\\n4. **여러 프린터**: 프린터 이름 지정으로 다른 프린터 사용 가능\\n\\n## 📄 라이선스\\n\\n이 프로젝트는 MIT 라이선스 하에 배포됩니다.\\n\\n## 🤝 기여하기\\n\\n1. Fork the repository\\n2. Create a feature branch\\n3. Make your changes\\n4. Add tests for new functionality\\n5. Run the test suite\\n6. Submit a pull request\\n\\n## 📞 지원\\n\\n문제가 발생하거나 질문이 있으시면 GitHub Issues를 통해 문의해주세요."
                 },
-                'escpos-commands-deep-dive.md': {
-                    title: 'ESC/POS 명령어 심층 분석: 한글 처리의 기술적 정교함',
-                    content: `마크다운 파일을 로드 중입니다...`
+                "appear-style-template.md": {
+                    "title": "Appear.sh 기반 디자인 템플릿 분석",
+                    "content": "# Appear.sh 기반 디자인 템플릿 분석\\n\\n## 개요\\n\\nAppear.sh 문서 사이트의 디자인 시스템을 분석하여 우리 프로젝트의 index.html에 적용할 수 있는 스타일 템플릿을 추출했습니다.\\n\\n## 디자인 철학 (자연어 표현)\\n\\n### 🎨 색상 철학\\n\\n**다크 모드 우선 설계**\\n- 개발자들의 눈의 피로를 줄이기 위한 다크 테마 기본값\\n- 밝은 화면에서 오는 피로감을 최소화하는 색상 선택\\n- 장시간 문서 읽기에 최적화된 대비율\\n\\n**12단계 세분화 색상 시스템**\\n- 각 색상마다 12개의 tint 레벨을 제공\\n- 미묘한 그라데이션과 깊이감 표현 가능\\n- 일관성 있는 색상 체계로 브랜드 아이덴티티 강화\\n\\n**의미론적 색상 사용**\\n- Primary Blue (52, 109, 219): 신뢰감과 전문성을 나타내는 파란색\\n- Warning Yellow: 주의사항과 팁을 위한 노란색\\n- Danger Red: 오류와 경고를 위한 빨간색  \\n- Success Green: 성공과 완료를 위한 초록색\\n\\n[... rest of the content abbreviated for brevity ...]"
                 },
-                'mcp-wrapper-analysis.md': {
-                    title: 'MCP Wrapper 상세 분석',
-                    content: `마크다운 파일을 로드 중입니다...`
+                "backlog.md": {
+                    "title": "개발 백로그 (Development Backlog)",
+                    "content": "# 개발 백로그 (Development Backlog)\\n\\n이 문서는 당장 수정할 필요는 없지만, 향후 프로젝트의 코드 품질과 유지보수성 향상을 위해 고려해볼 수 있는 개선 항목들을 기록합니다.\\n\\n## 1. `printer.py` 리팩토링\\n\\n- **내용**: ✅ **완료** - `main.py`를 제거하고 `printer.py`에 통합된 CLI 인터페이스 사용. 더 이상 중복 코드 없음.\\n- **개선 방향**: 해당 파일을 라이브러리 모듈의 역할에 충실하도록, 불필요한 실행 코드를 제거하여 코드의 명확성을 높입니다.\\n- **영향**: 없음 (실행 로직에 영향을 주지 않음)\\n- **상태**: 제안됨 (2025-06-29)\\n\\n[... rest of the content abbreviated for brevity ...]"
                 },
-                'mcp-stdio.md': {
-                    title: 'MCP stdio 통신 방식',
-                    content: `마크다운 파일을 로드 중입니다...`
+                "bixolon-srp330ii-control-chars.md": {
+                    "title": "BIXOLON SRP-330II ESC/POS 제어문자 특성 분석",
+                    "content": "# BIXOLON SRP-330II ESC/POS 제어문자 특성 분석\\n\\n## 개요\\n\\nBIXOLON SRP-330II 영수증 프린터는 표준 ESC/POS 프로토콜을 지원하지만, 일반적인 줄바꿈 및 여백 제어 명령어들을 무시하는 특별한 동작 특성을 가지고 있습니다. 이 문서는 실제 테스트를 통해 확인된 제어문자들의 작동 여부를 정리합니다.\\n\\n[... rest of the content abbreviated for brevity ...]"
                 },
-                'backlog.md': {
-                    title: '개발 백로그 (Development Backlog)',
-                    content: `마크다운 파일을 로드 중입니다...`
+                "escpos-commands-deep-dive.md": {
+                    "title": "ESC/POS 명령어 심층 분석: 한글 처리의 기술적 정교함",
+                    "content": "# ESC/POS 명령어 심층 분석: 한글 처리의 기술적 정교함\\n\\n## 🎯 개요\\n\\n`create_esc_pos_content` 함수의 ESC/POS 명령어 시퀀스는 단순해 보이지만, 그 안에는 **BIXOLON 프린터의 한글 처리 특성**과 **ESC/POS 프로토콜의 미묘한 동작**을 정확히 이해한 매우 정교한 구현이 숨어있습니다.\\n\\n[... rest of the content abbreviated for brevity ...]"
                 },
-                'printer-detailed-analysis.md': {
-                    title: 'printer.py 상세 분석 문서',
-                    content: `마크다운 파일을 로드 중입니다...`
+                "mcp-stdio.md": {
+                    "title": "MCP stdio 통신 방식",
+                    "content": "# MCP stdio 통신 방식\\n\\nMCP (Model Context Protocol)에서 사용하는 stdin/stdout 기반 통신 메커니즘에 대한 상세 설명\\n\\n## 개요\\n\\nMCP는 **JSON-RPC over stdio** 방식을 사용하여 클라이언트와 서버 간 통신을 수행합니다. 이는 HTTP나 소켓 통신 대신 **운영체제의 프로세스 파이프**를 활용하는 방식입니다.\\n\\n[... rest of the content abbreviated for brevity ...]"
                 },
-                'bixolon-srp330ii-control-chars.md': {
-                    title: 'BIXOLON SRP-330II ESC/POS 제어문자 특성 분석',
-                    content: `마크다운 파일을 로드 중입니다...`
+                "mcp-wrapper-analysis.md": {
+                    "title": "MCP Wrapper 상세 분석",
+                    "content": "# MCP Wrapper 상세 분석\\n\\n## 개요\\n\\n`mcp_wrapper.py`는 Claude Desktop과 FastAPI 서버 간의 브리지 역할을 수행하는 핵심 컴포넌트입니다. Model Context Protocol (MCP)을 구현하여 JSON-RPC 2.0 기반의 통신을 제공합니다.\\n\\n[... rest of the content abbreviated for brevity ...]"
                 },
-                'appear-style-template.md': {
-                    title: 'Appear.sh 기반 디자인 템플릿 분석',
-                    content: `마크다운 파일을 로드 중입니다...`
+                "printer-analysis.md": {
+                    "title": "printer.py 함수 분석 문서",
+                    "content": "# printer.py 함수 분석 문서\\n\\n**Created:** 2025-01-07T10:30:00Z  \\n**Category:** technical\\n\\n## 개요\\n\\n`printer.py`는 BIXOLON SRP-330II 영수증 프린터를 위한 핵심 모듈로, 한글 지원과 ESC/POS 프로토콜을 통한 텍스트 출력 기능을 제공합니다.\\n\\n[... rest of the content abbreviated for brevity ...]"
+                },
+                "printer-detailed-analysis.md": {
+                    "title": "printer.py 상세 분석 문서",
+                    "content": "# printer.py 상세 분석 문서\\n\\n## 개요\\n\\n`printer.py`는 BIXOLON SRP-330II 영수증 프린터에 한글과 영문 텍스트(최대 200자)를 출력하는 핵심 모듈입니다. CUPS 시스템을 통해 ESC/POS 프로토콜로 프린터와 통신하며, 한글 문자 폭 계산과 정확한 텍스트 정렬을 지원합니다.\\n\\n[... rest of the content abbreviated for brevity ...]"
                 }
             };
             
@@ -878,16 +606,17 @@ python3 mcp_wrapper.py 2>&1 | tee debug.log
             }
 
             // 기술적 기반
-            if (name.includes('mcp-stdio') || name.includes('wrapper') || name.includes('protocol') || 
-                title.includes('stdio') || title.includes('wrapper') || title.includes('mcp')) {
+            if (name.includes('core') || name.includes('utils') || name.includes('command') || 
+                name.includes('escpos') || name.includes('protocol') || name.includes('stdio') ||
+                title.includes('technical') || content.includes('implementation') ||
+                name.includes('mcp') || name.includes('wrapper')) {
                 return 'technical';
             }
 
             // 심층 분석
             if (name.includes('analysis') || name.includes('detailed') || name.includes('deep-dive') ||
-                name.includes('control-chars') || name.includes('escpos') ||
                 title.includes('analysis') || title.includes('deep') || title.includes('study') ||
-                title.includes('제어문자') || title.includes('심층')) {
+                title.includes('심층') || title.includes('상세')) {
                 return 'analysis';
             }
 
@@ -954,22 +683,10 @@ python3 mcp_wrapper.py 2>&1 | tee debug.log
         }
 
         // 문서 로드
-        async function loadDocument(filename) {
+        function loadDocument(filename) {
             if (!documents[filename]) return;
             
             currentDocument = filename;
-            
-            try {
-                // 실제 마크다운 파일에서 로드
-                const response = await fetch(filename);
-                if (response.ok) {
-                    const content = await response.text();
-                    documents[filename].content = content;
-                }
-            } catch (error) {
-                console.log('파일 로드 실패, 기본 콘텐츠 사용:', error);
-            }
-            
             const doc = documents[filename];
             
             // 마크다운 렌더링
@@ -989,8 +706,11 @@ python3 mcp_wrapper.py 2>&1 | tee debug.log
         function renderMarkdown(content) {
             const contentElement = document.getElementById('content');
             
+            // 이스케이프된 문자열을 실제 마크다운으로 변환
+            const actualContent = content.replace(/\\n/g, '\\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+            
             // Marked로 마크다운 변환
-            const html = marked.parse(content);
+            const html = marked.parse(actualContent);
             contentElement.innerHTML = html;
             
             // Prism으로 코드 하이라이팅

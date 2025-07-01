@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 # MCP 프로토콜 관련 상수
 MCP_VERSION = "2024-11-05"
-SERVER_NAME = "receipt-printer"
+SERVER_NAME = "todo-printer"
 SERVER_VERSION = "1.0.0"
 
 # MCP 서버 설정 (환경변수 의존성 제거)
@@ -29,14 +29,14 @@ class MCPServer:
         self.tools = {
             "print_receipt": {
                 "name": "print_receipt",
-                "description": "간단한 메모, 할일 목록, 텍스트를 영수증으로 출력합니다. '>' 로 시작하는 메시지나 짧은 텍스트를 즉시 출력할 때 사용하세요.",
+                "description": "간단한 메모, 할일 목록, 텍스트를 출력합니다. '>' 로 시작하는 메시지나 짧은 텍스트를 즉시 출력할 때 사용하세요.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
                         "text": {
                             "type": "string",
-                            "description": "출력할 텍스트 (200자 이내, 예: '우유 사오기', '회의 준비사항')",
-                            "maxLength": 200
+                            "description": "출력할 텍스트 (500자 이내, 예: '우유 사오기', '회의 준비사항')",
+                            "maxLength": 500
                         },
                         "printer_name": {
                             "type": "string",
@@ -132,12 +132,12 @@ class MCPServer:
                 }]
             }
         
-        if len(text) > 200:
+        if len(text) > 500:
             return {
                 "isError": True,
                 "content": [{
                     "type": "text",
-                    "text": f"❌ 텍스트가 너무 깁니다. ({len(text)}/200자) 200자 이내로 입력하세요."
+                    "text": f"❌ 텍스트가 너무 깁니다. ({len(text)}/500자) 500자 이내로 입력하세요."
                 }]
             }
         
