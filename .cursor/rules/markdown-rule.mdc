@@ -1,0 +1,35 @@
+---
+description: Markdown documentation standards for /docs directory
+globs: ["docs/**/*.md"]
+alwaysApply: false
+---
+
+# Markdown Documentation Rules
+
+When creating markdown files in the `/docs` directory, follow these standards:
+
+## Required Header Format
+
+Every markdown file MUST start with the following header format:
+
+```markdown
+# Document Title
+
+**Created:** 2024-07-01T15:30:45Z  
+**Category:** [overview|technical|analysis|planning|misc]
+
+[Document content follows...]
+```
+
+## Rules
+
+1. **Date Format**: Use RFC3339 format (YYYY-MM-DDTHH:MM:SSZ)
+2. **Category Selection**: Choose exactly one from:
+   - `overview` - High-level project overviews and introductions
+   - `technical` - Technical specifications, API docs, code analysis
+   - `analysis` - Research findings, data analysis, performance studies
+   - `planning` - Project plans, roadmaps, task breakdowns
+   - `misc` - Everything else that doesn't fit other categories
+
+3. **Header Placement**: Date and category info must appear immediately after the main title
+4. **Formatting**: Use bold text for labels, maintain consistent spacing
