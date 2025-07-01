@@ -162,7 +162,7 @@ class MCPServer:
         else:
             # 실제 출력
             try:
-                success = await self._run_sync(printer.printer_print, text, printer_name)
+                success = await self._run_sync(printer.printer_print, text, printer_name, True)
                 if success:
                     return {
                         "content": [{

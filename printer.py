@@ -131,7 +131,7 @@ def printer_list():
     except Exception:
         return []
 
-def printer_print(text, printer_name="BIXOLON_SRP_330II"):
+def printer_print(text, printer_name="BIXOLON_SRP_330II", isFromMCP=False):
     """CUPS를 통해 프린터로 출력"""
     try:
         # 출력할 내용 준비
@@ -154,16 +154,19 @@ def printer_print(text, printer_name="BIXOLON_SRP_330II"):
         os.unlink(temp_file_path)
         
         if result.returncode == 0:
-            print(f"✅ 출력 완료: {len(lines)}줄 → {printer_name}")
-            if result.stdout.strip():
-                print(f"📝 작업 ID: {result.stdout.strip()}")
+            if not isFromMCP:
+                print(f"✅ 출력 완료: {len(lines)}줄 → {printer_name}")
+                if result.stdout.strip():
+                    print(f"📝 작업 ID: {result.stdout.strip()}")
             return True
         else:
-            print(f"❌ 출력 실패: {result.stderr}")
+            if not isFromMCP:
+                print(f"❌ 출력 실패: {result.stderr}")
             return False
             
     except Exception as e:
-        print(f"❌ 출력 오류: {e}")
+        if not isFromMCP:
+            print(f"❌ 출력 오류: {e}")
         return False
 
 def printer_status(printer_name):
