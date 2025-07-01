@@ -201,13 +201,13 @@ class MCPServer:
                 }
             
             printer_list = ["🖨️  사용 가능한 프린터:"]
-            for printer in printers:
+            for printer_name in printers:
                 try:
-                    status = await self._run_sync(printer.printer_status, printer)
-                    printer_list.append(f"  ✅ {printer}")
+                    status = await self._run_sync(printer.printer_status, printer_name)
+                    printer_list.append(f"  ✅ {printer_name}")
                     printer_list.append(f"     상태: {status}")
                 except Exception as e:
-                    printer_list.append(f"  ❌ {printer} (상태 확인 실패: {str(e)})")
+                    printer_list.append(f"  ❌ {printer_name} (상태 확인 실패: {str(e)})")
             
             printer_list.append(f"\n총 {len(printers)}개 프린터")
             
