@@ -1,15 +1,18 @@
-# NordVPN Meshnet 스타일 문서 포털 생성 명령어
+# 문서 포털 index.html 생성 명령어
 
-docs/ 디렉터리의 마크다운 파일들을 스캔하여 **NordVPN Meshnet 스타일**의 심플하고 모던한 index.html을 자동 생성/업데이트합니다.
+project root 의 README.md 파일과 docs/ 디렉터리의 마크다운 파일들을 스캔하여 심플하고 모던한 index.html을 자동 생성/업데이트합니다.
 
 ## 실행할 작업:
 
 $ARGUMENTS가 "all"인 경우:
+- project root 의 README.md 파일을 스캔
 - docs/ 디렉터리의 모든 .md 파일을 스캔
-- NordVPN Meshnet 스타일 index.html을 완전히 새로 생성
+- index.html을 완전히 새로 생성
 
 $ARGUMENTS가 비어있거나 다른 값인 경우:
-- docs/ 디렉터리의 .md 파일들을 스캔하여 기존 index.html 업데이트
+- project root 의 README.md 파일을 스캔
+- docs/ 디렉터리의 .md 파일들을 스캔
+- 위 스캔 결과로 추가, 변경, 삭제된 md 파일을 확인하여 기존 index.html 업데이트
 
 ## 완전한 HTML 템플릿:
 
@@ -718,11 +721,11 @@ $ARGUMENTS가 비어있거나 다른 값인 경우:
 ## 5개 카테고리 자동 분류 로직:
 
 ### 카테고리 매핑 규칙 (categorizeDocument 함수):
-- **🏠 프로젝트 개요 (overview)**: README, overview, intro, guide, architecture
-- **🔧 기술적 기반 (technical)**: core, utils, command, escpos, protocol, stdio, engine
-- **🔍 심층 분석 (analysis)**: analysis, detailed, deep-dive, implementation, study
-- **📋 계획 및 개발 (planning)**: backlog, todo, plan, roadmap, development, feature
-- **📦 기타 (misc)**: 위 카테고리에 매칭되지 않는 모든 파일
+- ** 프로젝트 개요 (overview)**: README, overview, intro, guide, architecture
+- ** 기술적 기반 (technical)**: core, utils, command, escpos, protocol, stdio, engine
+- ** 심층 분석 (analysis)**: analysis, detailed, deep-dive, implementation, study
+- ** 계획 및 개발 (planning)**: backlog, todo, plan, roadmap, development, feature
+- ** 기타 (misc)**: 위 카테고리에 매칭되지 않는 모든 파일
 
 ### 우선순위 매칭:
 1. 파일명 키워드 확인
@@ -733,14 +736,16 @@ $ARGUMENTS가 비어있거나 다른 값인 경우:
 ## 실행 단계:
 
 ### $ARGUMENTS가 "all"인 경우:
-1. docs/ 디렉터리의 모든 .md 파일 스캔
-2. project 루트 디렉터리의 README.md 파일도 스캔
+1. project 루트 디렉터리의 README.md 파일 스캔
+2. docs/ 디렉터리의 모든 .md 파일 스캔
 3. 각 파일의 제목과 내용 추출
 4. 위 HTML 템플릿에 DOCUMENT_DATA_PLACEHOLDER 부분을 실제 데이터로 교체
 5. index.html 파일 생성
 
 ### $ARGUMENTS가 비어있거나 다른 값인 경우:
-1. 기존 index.html에서 문서 데이터 부분만 업데이트
-2. 네비게이션 구조는 유지하되 변경된 파일만 반영
+1. project 루트 디렉터리의 README.md 파일 스캔
+2. docs/ 디렉터리의 모든 .md 파일 스캔
+3. 스캔 결과 추가/변경/삭제된 .md 파일을 확인하여 기존 index.html에서 업데이트
+2. 네비게이션 구조는 유지하되 변경된 파일만 반영하는 것이다. 
 
 이제 실행해주세요!
