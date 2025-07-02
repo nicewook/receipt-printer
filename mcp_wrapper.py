@@ -27,8 +27,8 @@ class MCPServer:
         # ThreadPoolExecutor로 동기 함수들을 비동기로 실행
         self.executor = ThreadPoolExecutor(max_workers=2)
         self.tools = {
-            "print_receipt": {
-                "name": "print_receipt",
+            "print_memo": {
+                "name": "print_memo",
                 "description": "간단한 메모, 할일 목록, 텍스트를 출력합니다. '>' 로 시작하는 메시지나 짧은 텍스트를 즉시 출력할 때 사용하세요.",
                 "inputSchema": {
                     "type": "object",
@@ -95,8 +95,8 @@ class MCPServer:
     async def handle_tool_call(self, tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """MCP 도구 호출 처리"""
         try:
-            if tool_name == "print_receipt":
-                return await self._handle_print_receipt(arguments)
+            if tool_name == "print_memo":
+                return await self._handle_print_memo(arguments)
             elif tool_name == "list_printers":
                 return await self._handle_list_printers(arguments)
             elif tool_name == "get_printer_status":
@@ -116,7 +116,7 @@ class MCPServer:
                 ]
             }
 
-    async def _handle_print_receipt(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    async def _handle_print_memo(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """단순 텍스트 출력 처리"""
         text = arguments.get("text", "").strip()
         printer_name = arguments.get("printer_name", "BIXOLON_SRP_330II")
@@ -167,7 +167,7 @@ class MCPServer:
                     return {
                         "content": [{
                             "type": "text", 
-                            "text": f"✅ 출력 완료: {len(text)}자 → {printer_name}"
+                            "text": f"✅ 출력 완료: {len(text)}자"
                         }]
                     }
                 else:
@@ -338,7 +338,7 @@ class MCPServer:
 
     async def run(self):
         """MCP 서버 실행"""
-        self.log_debug("MCP Receipt Printer Server starting...")
+        self.log_debug("MCP Todo Printer Server starting...")
         
         try:
             while True:
