@@ -435,45 +435,50 @@
                     filename: "README.md",
                     category: "overview"
                 },
-                "appear-style-template.md": {
-                    title: "Appear.sh 기반 디자인 템플릿 분석",
-                    filename: "docs/appear-style-template.md",
-                    category: "misc"
-                },
-                "backlog.md": {
-                    title: "개발 백로그 (Development Backlog)",
-                    filename: "docs/backlog.md",
-                    category: "planning"
-                },
-                "bixolon-srp330ii-control-chars.md": {
-                    title: "BIXOLON SRP-330II ESC/POS 제어문자 특성 분석",
-                    filename: "docs/bixolon-srp330ii-control-chars.md",
-                    category: "technical"
-                },
-                "escpos-commands-deep-dive.md": {
+                "docs/escpos-commands-deep-dive.md": {
                     title: "ESC/POS 명령어 심층 분석: 한글 처리의 기술적 정교함",
                     filename: "docs/escpos-commands-deep-dive.md",
                     category: "analysis"
                 },
-                "mcp-stdio.md": {
-                    title: "MCP stdio 통신 방식",
-                    filename: "docs/mcp-stdio.md",
-                    category: "technical"
-                },
-                "mcp-wrapper-analysis.md": {
+                "docs/mcp-wrapper-analysis.md": {
                     title: "MCP Wrapper 상세 분석",
                     filename: "docs/mcp-wrapper-analysis.md",
                     category: "analysis"
                 },
-                "printer-analysis.md": {
+                "docs/mcp-stdio.md": {
+                    title: "MCP stdio 통신 방식",
+                    filename: "docs/mcp-stdio.md",
+                    category: "technical"
+                },
+                "docs/printer-detailed-analysis.md": {
+                    title: "printer.py 상세 분석 문서",
+                    filename: "docs/printer-detailed-analysis.md",
+                    category: "analysis"
+                },
+                "docs/bixolon-srp330ii-control-chars.md": {
+                    title: "BIXOLON SRP-330II ESC/POS 제어문자 특성 분석",
+                    filename: "docs/bixolon-srp330ii-control-chars.md",
+                    category: "technical"
+                },
+                "docs/appear-style-template.md": {
+                    title: "Appear.sh 기반 디자인 템플릿 분석",
+                    filename: "docs/appear-style-template.md",
+                    category: "misc"
+                },
+                "docs/printer-analysis.md": {
                     title: "printer.py 함수 분석 문서",
                     filename: "docs/printer-analysis.md",
                     category: "technical"
                 },
-                "printer-detailed-analysis.md": {
-                    title: "printer.py 상세 분석 문서",
-                    filename: "docs/printer-detailed-analysis.md",
-                    category: "analysis"
+                "docs/backlog.md": {
+                    title: "개발 백로그 (Development Backlog)",
+                    filename: "docs/backlog.md",
+                    category: "planning"
+                },
+                "docs/json-rpc-protocol.md": {
+                    title: "JSON-RPC 프로토콜 상세 가이드",
+                    filename: "docs/json-rpc-protocol.md",
+                    category: "technical"
                 }
             };
             
@@ -523,9 +528,7 @@
 
             Object.keys(documents).forEach(filename => {
                 const category = documents[filename].category;
-                if (categoryCounts[category] !== undefined) {
-                    categoryCounts[category]++;
-                }
+                categoryCounts[category]++;
             });
 
             const content = document.getElementById('content');
