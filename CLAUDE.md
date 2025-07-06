@@ -27,6 +27,43 @@ gemini -p "This error occurs when running flutter build ios. What could be the c
 3. **Iterate on solutions**: Use responses to refine your approach and ask follow-up questions
 4. **Combine insights**: Merge insights from both Claude Code and Gemini for comprehensive solutions
 
+## Prompt Enhancement
+
+When working with this project, Claude Code should enhance user prompts before proceeding:
+
+### Korean Prompts
+- **Translate to English**: Convert Korean prompts to English for better processing
+- **Enhance clarity**: Improve the prompt structure and specificity  
+- **Display improved prompt**: Show the enhanced English prompt to the user
+- **Proceed with enhanced version**: Use the improved prompt for task execution
+
+### English Prompts  
+- **No translation needed**: Keep the original language
+- **Enhance clarity**: Improve prompt structure, specificity, and technical precision
+- **Display improved prompt**: Show the enhanced version to the user
+- **Proceed with enhanced version**: Use the improved prompt for task execution
+
+### Example Enhancement Process
+```
+Original (Korean): "프린터 테스트 해줘"
+Enhanced (English): "Test the BIXOLON receipt printer functionality by running the test suite (pytest tests/test_printer.py), checking MCP tool responses, and verifying ESC/POS command generation for Korean text processing."
+
+Original (Korean): "에러 메시지가 나와"
+Enhanced (English): "Debug the error message by examining stderr logs from mcp_wrapper.py, checking CUPS printer status with 'lpstat -p', and analyzing JSON-RPC communication between Claude Desktop and the MCP server."
+
+Original (English): "Add new feature"
+Enhanced (English): "Add a new feature to the receipt printer MCP server by: 1) defining the tool schema in mcp_wrapper.py, 2) implementing the core functionality in printer.py, 3) adding comprehensive tests, and 4) updating documentation with usage examples."
+
+Original (English): "Fix the printer"  
+Enhanced (English): "Diagnose and resolve BIXOLON SRP-330II printer issues by checking CUPS service status, verifying printer driver installation, testing ESC/POS command execution, and ensuring proper EUC-KR encoding for Korean text support."
+
+Original (Korean): "코드 리뷰 해줘"
+Enhanced (English): "Perform a comprehensive code review of the receipt printer project, focusing on: MCP protocol compliance in mcp_wrapper.py, ESC/POS command accuracy in printer.py, error handling patterns, test coverage, and Korean text processing correctness."
+
+Original (English): "Deploy to production"
+Enhanced (English): "Prepare the receipt printer MCP server for production deployment by: 1) validating all test cases pass, 2) verifying Claude Desktop configuration, 3) documenting installation requirements, 4) testing printer connectivity, and 5) ensuring proper error handling for edge cases."
+```
+
 ## Commands
 
 ### MCP Server Mode (Recommended)

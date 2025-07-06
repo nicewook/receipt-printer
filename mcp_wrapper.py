@@ -29,7 +29,7 @@ class MCPServer:
         self.tools = {
             "print_memo": {
                 "name": "print_memo",
-                "description": "간단한 메모, 할일 목록, 텍스트를 출력합니다. '>' 로 시작하는 메시지나 짧은 텍스트를 즉시 출력할 때 사용하세요.",
+                "description": "'>' 로 시작하거나 '출력'을 요청한 텍스트에 대해 사용합니다. 텍스트를 절대로 수정하지 마세요.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
